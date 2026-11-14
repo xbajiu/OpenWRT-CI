@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: MIT
+name: Sync-Upstream
+
+on:
+  # 自动同步：每5天早上 05:00 (北京时间，在 05:21 编译前执行)
+  schedule:
+    - cron: "0 21 */5 * *"
+  # 手动一键同步
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync with VIKINGYFY/OpenWRT-CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add and Fetch Upstream
+        run: |
+          git remote add upstream https://github.com/VIKINGYFY/OpenWRT-CI.git 2>/dev/null || true
+          git fetch upstream main
+
+      - name: Merge Upstream Changes
+        run: |
+          # 尝试平滑合并上游更新
+          if git merge upstream/main --no-edit -m "chore: 自动同步上游 VIKINGYFY/OpenWRT-CI 最新代码"; then
+            echo "Successfully merged upstream changes."
+          else
+            echo "Notice: Merge conflict detected, attempting strategy ours for specific conflict..."
+            git merge --abort || true
+            git merge -X theirs upstream/main --no-edit -m "chore: 自动同步上游更新 (保护私有配置)" || true
+          fi
+
+      - name: Push to Origin
+        run: |
+          git push origin main
