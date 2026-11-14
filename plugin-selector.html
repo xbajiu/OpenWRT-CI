@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redmi AX6 ImmortalWrt 固件插件自定义配置器</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-hover: #24344d;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --border: #334155;
+      --success: #10b981;
+      --success-bg: #064e3b;
+      --warning: #f59e0b;
+      --warning-bg: #451a03;
+      --danger: #ef4444;
+      --danger-bg: #450a0a;
+      --tag-bg: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* 顶部导航与横幅 */
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 20px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+
+    .header-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .title-group h1 {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-device {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #fff;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .title-group p {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--tag-bg);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-pill strong {
+      color: #38bdf8;
+    }
+
+    /* 搜索与分类 */
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 9px 14px 9px 36px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .search-input-wrapper input:focus {
+      border-color: var(--primary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-sub);
+      pointer-events: none;
+    }
+
+    .category-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .category-scroll::-webkit-scrollbar {
+      height: 4px;
+    }
+    .category-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .cat-btn {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .cat-btn:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .cat-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* 主体布局 */
+    main {
+      max-width: 1300px;
+      margin: 20px auto 140px;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    /* 插件网格 */
+    .plugin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 16px;
+    }
+
+    .plugin-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s, border-color 0.15s, background 0.15s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .plugin-card:hover {
+      background: var(--card-hover);
+      border-color: #475569;
+      transform: translateY(-2px);
+    }
+
+    .plugin-card.selected {
+      border-color: #3b82f6;
+      background: #1e293b;
+      box-shadow: 0 0 0 1px #3b82f6;
+    }
+
+    .plugin-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .plugin-checkbox {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+    }
+
+    .plugin-info {
+      flex: 1;
+    }
+
+    .plugin-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .plugin-pkg {
+      font-size: 12px;
+      font-family: monospace;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .badge-default {
+      background: var(--success-bg);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+
+    .badge-warn {
+      background: var(--warning-bg);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .badge-category {
+      background: #334155;
+      color: #cbd5e1;
+    }
+
+    .plugin-desc {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .plugin-note {
+      margin-top: 8px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #0f172a;
+      border-left: 3px solid #3b82f6;
+      color: #cbd5e1;
+    }
+
+    .plugin-note.warn {
+      border-left-color: #f59e0b;
+      color: #fde68a;
+    }
+
+    /* 底部操作面板 */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #090e17;
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      z-index: 100;
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .bottom-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .summary-text {
+      font-size: 14px;
+    }
+
+    .summary-text strong {
+      color: #38bdf8;
+      font-size: 16px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-success {
+      background: #059669;
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      background: #047857;
+    }
+
+    /* 弹窗预览 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .modal-tab-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .modal-tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    pre.code-block {
+      background: #090e17;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      color: #38bdf8;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* 吐司通知 */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      z-index: 300;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 头部区域 -->
+  <header>
+    <div class="header-container">
+      <div class="header-top">
+        <div class="title-group">
+          <h1>
+            ImmortalWrt 插件在线配置器
+            <span class="badge-device">Redmi AX6 / 高通 IPQ807x</span>
+          </h1>
+          <p>针对你的云编译项目定制，当前已默认选中你要求的所有插件，支持一键导出配置与同步更新！</p>
+        </div>
+        <div class="stats-bar">
+          <div class="stat-pill">总插件: <strong id="total-count">0</strong></div>
+          <div class="stat-pill">已选插件: <strong id="selected-count">0</strong></div>
+          <div class="stat-pill">默认勾选: <strong id="default-count">0</strong></div>
+        </div>
+      </div>
+
+      <!-- 控制区 -->
+      <div class="controls-row">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="搜索插件名称、中文功能、包名 (如: passwall, 唤醒, 测速)...">
+        </div>
+        <div class="category-scroll" id="category-bar">
+          <!-- 分类按钮由 JS 渲染 -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 插件列表区 -->
+  <main>
+    <div class="plugin-grid" id="plugin-grid">
+      <!-- 插件卡片由 JS 渲染 -->
+    </div>
+  </main>
+
+  <!-- 底部固定操作栏 -->
+  <div class="bottom-bar">
+    <div class="bottom-container">
+      <div class="summary-text">
+        已选择 <strong id="bar-selected-count">0</strong> 个插件 (包含核心依赖与配套服务)
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="resetToDefault()">🔄 恢复默认选择</button>
+        <button class="btn btn-secondary" onclick="clearAllSelections()">🗑️ 全部取消</button>
+        <button class="btn btn-primary" onclick="openPreviewModal()">📋 预览与生成配置</button>
+        <button class="btn btn-success" onclick="downloadConfigFile()">💾 下载 PRIVATE.txt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗：配置预览与复制 -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>生成的固件配置文件内容</h3>
+        <button class="close-btn" onclick="closePreviewModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active" id="tab-btn-private" onclick="switchTab('private')">Config/PRIVATE.txt 格式</button>
+          <button class="modal-tab-btn" id="tab-btn-package" onclick="switchTab('package')">GitHub Actions 手动参数格式</button>
+        </div>
+        <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;" id="tab-hint">
+          直接复制到仓库中的 <code>Config/PRIVATE.txt</code>，编译时会自动注入生效。
+        </p>
+        <pre class="code-block" id="code-content"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePreviewModal()">关闭</button>
+        <button class="btn btn-primary" onclick="copyConfigText()">📋 复制到剪贴板</button>
+        <button class="btn btn-success" onclick="downloadConfigFile()">💾 直接下载文件</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示浮层 -->
+  <div class="toast" id="toast">复制成功！</div>
+
+  <script>
+    // 完整插件数据库定义
+    const pluginsData = [
+      // 科学上网与代理
+      {
+        id: "passwall",
+        pkg: "luci-app-passwall",
+        title: "PassWall 科学上网",
+        category: "科学上网",
+        desc: "稳定高效的主流代理客户端，支持节点分流、自动切换、游戏 UDP 代理、GFWList 等多种模式。",
+        isDefault: true,
+        note: "已为你自动配套 Xray、Sing-Box、ChinaDNS-NG、Haproxy 及 Geo 规则库。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-passwall=y",
+          "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray=y",
+          "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_SingBox=y",
+          "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG=y",
+          "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Haproxy=y",
+          "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Geosite=y",
+          "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Geoip=y"
+        ]
+      },
+      {
+        id: "homeproxy",
+        pkg: "luci-app-homeproxy",
+        title: "HomeProxy 代理客户端",
+        category: "科学上网",
+        desc: "基于 sing-box 核心研发的下一代透明代理客户端，UI 现代、原生配合 firewall4。",
+        isDefault: false,
+        note: "建议与 PassWall 二选一，避免防火墙端口劫持冲突。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-homeproxy=y"
+        ]
+      },
+      {
+        id: "openclash",
+        pkg: "luci-app-openclash",
+        title: "OpenClash 客户端",
+        category: "科学上网",
+        desc: "基于 Clash 核心的图形代理客户端，功能强大支持复杂分流策略与面板控制，内存开销稍大。",
+        isDefault: false,
+        note: "适合习惯使用 Clash 订阅规则的用户。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-openclash=y"
+        ]
+      },
+      {
+        id: "nikki",
+        pkg: "luci-app-nikki",
+        title: "Nikki 代理工具",
+        category: "科学上网",
+        desc: "基于 Mihomo 核心的轻量级代理工具，具备出色的内存管理和规则支持。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-nikki=y"]
+      },
+
+      // 网络加速与流控
+      {
+        id: "turboacc",
+        pkg: "luci-app-turboacc",
+        title: "Turbo ACC 网络加速",
+        category: "网络加速",
+        desc: "经典的软硬件流量分载加速面板，支持 BBR 拥塞控制和 Flow Offload 流量切流。",
+        isDefault: true,
+        note: "Redmi AX6 自带高通 NSS 满血硬件加速。当前配置已开启 BBR 与流量分载，关闭软件 SFE 以免与 NSS 冲突。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-turboacc=y",
+          "CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=y",
+          "CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA=y",
+          "CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE=n",
+          "CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_NFT_FULLCONE=n",
+          "CONFIG_PACKAGE_kmod-tcp-bbr=y"
+        ]
+      },
+      {
+        id: "natmapt",
+        pkg: "luci-app-natmapt",
+        title: "NATMap 端口穿透加速",
+        category: "网络加速",
+        desc: "利用 NAT1/FullCone 特性，无需公网 IP 建立 TCP/UDP 外部端口映射打通内网。",
+        isDefault: true,
+        note: "搭配固件自带的 Sonic FullCone NAT 能发挥极高穿透率。",
+        configLines: ["CONFIG_PACKAGE_luci-app-natmapt=y"]
+      },
+      {
+        id: "sqm",
+        pkg: "luci-app-sqm",
+        title: "SQM 智能队列流量管理",
+        category: "网络加速",
+        desc: "基于 CAKE / FQ_CoDel 算法的智能 QoS 限速，能彻底消灭 Bufferbloat 缓冲膨胀，游戏低延迟利器。",
+        isDefault: false,
+        note: "开启 SQM 会由 CPU 接管部分流量队列，可能会略微降低千兆极限吞吐。",
+        configLines: ["CONFIG_PACKAGE_luci-app-sqm=y"]
+      },
+
+      // 内网穿透与 VPN 组网
+      {
+        id: "zerotier",
+        pkg: "luci-app-zerotier",
+        title: "ZeroTier 异地内网穿透",
+        category: "穿透与VPN",
+        desc: "无需公网 IP，一键加入专属虚拟局域网（VLAN），方便从外网随时随地安全访问家庭局域网设备。",
+        isDefault: true,
+        note: "你指定只保留的 VPN 插件。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-zerotier=y",
+          "CONFIG_PACKAGE_zerotier=y"
+        ]
+      },
+      {
+        id: "lucky",
+        pkg: "luci-app-lucky",
+        title: "Lucky 软硬路由大吉工具",
+        category: "穿透与VPN",
+        desc: "广受欢迎的全能型运维神器！集成动态域名解析 (DDNS)、IPv6/IPv4 端口转发、反向代理、WOL唤醒、Web服务等。",
+        isDefault: true,
+        note: "国内开发者热门工具，界面美观，资源占用极小。",
+        configLines: [
+          "CONFIG_PACKAGE_lucky=y",
+          "CONFIG_PACKAGE_luci-app-lucky=y"
+        ]
+      },
+      {
+        id: "tailscale",
+        pkg: "luci-app-tailscale",
+        title: "Tailscale 虚拟组网",
+        category: "穿透与VPN",
+        desc: "基于 WireGuard 的零配置网状虚拟私有网络 (Mesh VPN)，跨设备体验极佳。",
+        isDefault: false,
+        note: "你要求 VPN 只要 ZeroTier，因此默认未选中。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-tailscale=y",
+          "CONFIG_PACKAGE_tailscale=y"
+        ]
+      },
+      {
+        id: "easytier",
+        pkg: "luci-app-easytier",
+        title: "EasyTier 简易异地组网",
+        category: "穿透与VPN",
+        desc: "支持去中心化 P2P 穿透、自定义中继节点的高性能异地组网客户端。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-easytier=y"]
+      },
+      {
+        id: "wireguard",
+        pkg: "luci-app-wireguard",
+        title: "WireGuard 官方客户端/服务端",
+        category: "穿透与VPN",
+        desc: "内核级的高速轻量 VPN 协议，速度飞快。",
+        isDefault: false,
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-wireguard=y",
+          "CONFIG_PACKAGE_kmod-wireguard=y"
+        ]
+      },
+      {
+        id: "openvpn",
+        pkg: "luci-app-openvpn",
+        title: "OpenVPN 传统安全通道",
+        category: "穿透与VPN",
+        desc: "历史悠久的跨平台加密隧道，兼容绝大多数商用 VPN 客户端。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-openvpn=y"]
+      },
+      {
+        id: "ddnsgo",
+        pkg: "luci-app-ddns-go",
+        title: "DDNS-Go 动态域名解析",
+        category: "穿透与VPN",
+        desc: "简单易用、支持阿里云/腾讯云/Cloudflare/华为云等国内外主流 DNS 服务商的动态 IP 解析。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-ddns-go=y"]
+      },
+
+      // 常用网络与服务
+      {
+        id: "wol",
+        pkg: "luci-app-wol",
+        title: "WOL 网络唤醒",
+        category: "常用服务",
+        desc: "发送魔术包 (Magic Packet) 远程唤醒局域网内的电脑、NAS、打印机等设备。",
+        isDefault: true,
+        note: "标配包含 wol 与 etherwake 双发包工具。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-wol=y",
+          "CONFIG_PACKAGE_wol=y",
+          "CONFIG_PACKAGE_etherwake=y",
+          "CONFIG_PACKAGE_luci-app-wolultra=n"
+        ]
+      },
+      {
+        id: "uhttpd",
+        pkg: "luci-app-uhttpd",
+        title: "uHTTPd Web服务设置",
+        category: "常用服务",
+        desc: "路由器 LuCI 后台网页服务器的配置界面，可自由调节 HTTP/HTTPS 端口、上传 SSL 证书等。",
+        isDefault: true,
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-uhttpd=y",
+          "CONFIG_PACKAGE_uhttpd=y",
+          "CONFIG_PACKAGE_uhttpd-mod-ubus=y"
+        ]
+      },
+      {
+        id: "upnp",
+        pkg: "luci-app-upnp",
+        title: "UPnP 端口自动映射",
+        category: "常用服务",
+        desc: "通用即插即用服务，游戏主机（Switch/PS5/Xbox）与迅雷、PT等下载软件无需手动设置端口映射。",
+        isDefault: true,
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-upnp=y",
+          "CONFIG_PACKAGE_miniupnpd=y"
+        ]
+      },
+      {
+        id: "vlmcsd",
+        pkg: "luci-app-vlmcsd",
+        title: "KMS 局域网激活服务器",
+        category: "常用服务",
+        desc: "微软 Windows 与 Office 批量授权自动激活服务，在局域网内免人工输入密钥即可自动激活。",
+        isDefault: true,
+        configLines: [
+          "CONFIG_PACKAGE_luci-app-vlmcsd=y",
+          "CONFIG_PACKAGE_vlmcsd=y"
+        ]
+      },
+      {
+        id: "autoreboot",
+        pkg: "luci-app-autoreboot",
+        title: "定时重启服务",
+        category: "常用服务",
+        desc: "支持设置每周或每日固定时间（如凌晨 4 点）自动重启路由器，保障路由器长期稳定运行不卡顿。",
+        isDefault: true,
+        configLines: ["CONFIG_PACKAGE_luci-app-autoreboot=y"]
+      },
+      {
+        id: "timecontrol",
+        pkg: "luci-app-timecontrol",
+        title: "上网时间控制",
+        category: "常用服务",
+        desc: "针对指定 IP 或 MAC 地址设备设置可上网的时间段，适合家长管控儿童设备上网时长。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-timecontrol=y"]
+      },
+      {
+        id: "netspeedtest",
+        pkg: "luci-app-netspeedtest",
+        title: "网络测速工具",
+        category: "常用服务",
+        desc: "集成 Ookla Speedtest 与局域网 Homebox 测速，直接在路由器端测量真实外网下行带宽。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-netspeedtest=y"]
+      },
+
+      // DNS 与拦截过滤
+      {
+        id: "mosdns",
+        pkg: "luci-app-mosdns",
+        title: "MosDNS 智能分流解析",
+        category: "DNS过滤",
+        desc: "模块化可编排的 DNS 转发分流服务，实现国内外域名秒速分流、防 DNS 劫持与去广告。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-mosdns=y"]
+      },
+      {
+        id: "adguardhome",
+        pkg: "luci-app-adguardhome",
+        title: "AdGuardHome 广告卫士",
+        category: "DNS过滤",
+        desc: "网络范围内的广告拦截与隐私跟踪拦截中心，支持自定义过滤规则与详尽的 DNS 统计图表。",
+        isDefault: false,
+        note: "较消耗 RAM，Redmi AX6 (512MB 内存) 可流畅带动。",
+        configLines: ["CONFIG_PACKAGE_luci-app-adguardhome=y"]
+      },
+
+      // 系统运维与硬件管理
+      {
+        id: "ttyd",
+        pkg: "luci-app-ttyd",
+        title: "ttyd 网页终端",
+        category: "系统管理",
+        desc: "在浏览器网页内直接打开 SSH 命令行窗口，无需额外安装 Putty 或 XShell 软件即可管理系统。",
+        isDefault: true,
+        configLines: ["CONFIG_PACKAGE_luci-app-ttyd=y"]
+      },
+      {
+        id: "ramfree",
+        pkg: "luci-app-ramfree",
+        title: "定时释放内存",
+        category: "系统管理",
+        desc: "定时触发 Linux 缓存清理（Drop Caches），保持可用可用空闲内存充足。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-ramfree=y"]
+      },
+      {
+        id: "cpufreq",
+        pkg: "luci-app-cpufreq",
+        title: "CPU 频率与调速模式调节",
+        category: "系统管理",
+        desc: "可调节高通 IPQ8071A CPU 的调频策略（Performance 性能模式 / Schedutil 均衡调度等）。",
+        isDefault: true,
+        configLines: ["CONFIG_PACKAGE_luci-app-cpufreq=y"]
+      },
+      {
+        id: "partexp",
+        pkg: "luci-app-partexp",
+        title: "磁盘分区一键扩容",
+        category: "系统管理",
+        desc: "用于自动将系统未分配的闪存空间合并到根分区，提升系统可用容量。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-partexp=y"]
+      },
+
+      // 存储与文件服务（注意 AX6 硬件提示）
+      {
+        id: "samba4",
+        pkg: "luci-app-samba4",
+        title: "Samba4 局域网文件共享",
+        category: "文件存储",
+        desc: "将路由器挂载的硬盘作为 Windows 网上邻居 / 局域网共享驱动器访问。",
+        isDefault: false,
+        warn: "硬件提示：Redmi AX6 机身没有自带 USB 接口，若无外挂硬件请勿勾选以节省闪存空间！",
+        configLines: ["CONFIG_PACKAGE_luci-app-samba4=y"]
+      },
+      {
+        id: "minidisk",
+        pkg: "luci-app-mini-diskmanager",
+        title: "微型磁盘管理",
+        category: "文件存储",
+        desc: "简单的硬盘格式化、分区挂载控制工具。",
+        isDefault: false,
+        warn: "Redmi AX6 无 USB 接口，普通用户无需勾选。",
+        configLines: ["CONFIG_PACKAGE_luci-app-mini-diskmanager=y"]
+      },
+      {
+        id: "openlist2",
+        pkg: "luci-app-openlist2",
+        title: "AList 聚合网盘挂载",
+        category: "文件存储",
+        desc: "支持挂载百度网盘、阿里云盘、夸克网盘、115、WebDAV 等 30+ 种网盘并统一浏览与分享。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-app-openlist2=y"]
+      },
+      {
+        id: "qbittorrent",
+        pkg: "luci-app-qbittorrent",
+        title: "qBittorrent BT/PT 下载机",
+        category: "文件存储",
+        desc: "支持做种、下载 BT/磁力链接与 PT 站点的专业下载工具。",
+        isDefault: false,
+        warn: "AX6 无 USB 扩展，且下载重度消耗闪存寿命，不建议在路由器本机直接下载。",
+        configLines: ["CONFIG_PACKAGE_luci-app-qbittorrent=y"]
+      },
+
+      // 主题外观
+      {
+        id: "argon",
+        pkg: "luci-theme-argon",
+        title: "Argon 经典极简主题",
+        category: "外观主题",
+        desc: "社区最受欢迎的高颜值现代扁平主题，支持深浅模式自动切换、必应每日壁纸与自定义配色。",
+        isDefault: true,
+        note: "你指定使用的主题，已作为系统默认主题写入固件配置。",
+        configLines: [
+          "CONFIG_PACKAGE_luci-theme-argon=y",
+          "CONFIG_PACKAGE_luci-app-argon-config=y"
+        ]
+      },
+      {
+        id: "vantage",
+        pkg: "luci-theme-vantage",
+        title: "Vantage 仪表盘主题",
+        category: "外观主题",
+        desc: "VIKINGYFY 仓库原始默认的主题，拥有精致的侧边栏与仪表盘设计。",
+        isDefault: false,
+        configLines: ["CONFIG_PACKAGE_luci-theme-vantage=y"]
+      },
+      {
+        id: "aurora",
+        pkg: "luci-theme-aurora",
+        title: "Aurora 极光主题",
+        category: "外观主题",
+        desc: "轻量新颖的交互风格，支持下拉式菜单与圆角卡片视觉。",
+        isDefault: false,
+        configLines: [
+          "CONFIG_PACKAGE_luci-theme-aurora=y",
+          "CONFIG_PACKAGE_luci-app-aurora-config=y"
+        ]
+      },
+      {
+        id: "kucat",
+        pkg: "luci-theme-kucat",
+        title: "KuCat 酷猫主题",
+        category: "外观主题",
+        desc: "国内 Sirpdboy 制作的炫彩主题，功能面板丰富。",
+        isDefault: false,
+        configLines: [
+          "CONFIG_PACKAGE_luci-theme-kucat=y",
+          "CONFIG_PACKAGE_luci-app-kucat-config=y"
+        ]
+      }
+    ];
+
+    // 全局状态
+    let selectedSet = new Set();
+    let currentCategory = "全部";
+    let searchQuery = "";
+    let activeTab = "private";
+
+    // 初始化已选项
+    function initDefaults() {
+      selectedSet.clear();
+      pluginsData.forEach(p => {
+        if (p.isDefault) {
+          selectedSet.add(p.id);
+        }
+      });
+      updateStats();
+    }
+
+    // 更新统计数字
+    function updateStats() {
+      document.getElementById("total-count").innerText = pluginsData.length;
+      document.getElementById("selected-count").innerText = selectedSet.size;
+      document.getElementById("bar-selected-count").innerText = selectedSet.size;
+      const defCount = pluginsData.filter(p => p.isDefault).length;
+      document.getElementById("default-count").innerText = defCount;
+    }
+
+    // 渲染分类按钮
+    function renderCategories() {
+      const categories = ["全部", "已选中的", "科学上网", "网络加速", "穿透与VPN", "常用服务", "DNS过滤", "系统管理", "文件存储", "外观主题"];
+      const container = document.getElementById("category-bar");
+      container.innerHTML = "";
+
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = `cat-btn ${cat === currentCategory ? "active" : ""}`;
+        btn.innerText = cat;
+        btn.onclick = () => {
+          currentCategory = cat;
+          renderCategories();
+          renderCards();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // 过滤与渲染卡片
+    function renderCards() {
+      const grid = document.getElementById("plugin-grid");
+      grid.innerHTML = "";
+
+      const filtered = pluginsData.filter(p => {
+        // 分类匹配
+        if (currentCategory === "已选中的" && !selectedSet.has(p.id)) return false;
+        if (currentCategory !== "全部" && currentCategory !== "已选中的" && p.category !== currentCategory) return false;
+
+        // 搜索匹配
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const matchPkg = p.pkg.toLowerCase().includes(q);
+          const matchTitle = p.title.toLowerCase().includes(q);
+          const matchDesc = p.desc.toLowerCase().includes(q);
+          const matchCat = p.category.toLowerCase().includes(q);
+          if (!matchPkg && !matchTitle && !matchDesc && !matchCat) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-sub);">
+            <div style="font-size: 36px; margin-bottom: 10px;">🔍</div>
+            <p>没有找到匹配的插件，请尝试更换搜索词或选择其它分类</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const isChecked = selectedSet.has(p.id);
+        const card = document.createElement("div");
+        card.className = `plugin-card ${isChecked ? "selected" : ""}`;
+        card.onclick = (e) => {
+          if (e.target.tagName !== "INPUT") {
+            toggleSelect(p.id);
+          }
+        };
+
+        let badgeHtml = "";
+        if (p.isDefault) {
+          badgeHtml += `<span class="badge badge-default">当前默认已选</span>`;
+        }
+        if (p.warn) {
+          badgeHtml += `<span class="badge badge-warn">硬件注意</span>`;
+        }
+        badgeHtml += `<span class="badge badge-category">${p.category}</span>`;
+
+        card.innerHTML = `
+          <div>
+            <div class="plugin-card-header">
+              <input type="checkbox" class="plugin-checkbox" ${isChecked ? "checked" : ""} onchange="toggleSelect('${p.id}')">
+              <div class="plugin-info">
+                <div class="plugin-title">
+                  ${p.title}
+                  ${badgeHtml}
+                </div>
+                <div class="plugin-pkg">${p.pkg}</div>
+              </div>
+            </div>
+            <div class="plugin-desc">${p.desc}</div>
+          </div>
+          ${p.note ? `<div class="plugin-note">💡 ${p.note}</div>` : ""}
+          ${p.warn ? `<div class="plugin-note warn">⚠️ ${p.warn}</div>` : ""}
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // 切换勾选状态
+    function toggleSelect(id) {
+      if (selectedSet.has(id)) {
+        selectedSet.delete(id);
+      } else {
+        selectedSet.add(id);
+      }
+      updateStats();
+      renderCards();
+    }
+
+    // 恢复默认
+    function resetToDefault() {
+      initDefaults();
+      renderCards();
+      showToast("已重置为你原本要求的默认配置！");
+    }
+
+    // 全部取消
+    function clearAllSelections() {
+      selectedSet.clear();
+      updateStats();
+      renderCards();
+      showToast("已取消所有勾选！");
+    }
+
+    // 动态生成配置文本
+    function generateConfigText() {
+      if (activeTab === "package") {
+        // Actions workflow_dispatch 手动参数格式（多个用换行符分隔）
+        const lines = [];
+        pluginsData.forEach(p => {
+          if (selectedSet.has(p.id)) {
+            p.configLines.forEach(l => lines.push(l));
+          } else {
+            lines.push(`CONFIG_PACKAGE_${p.pkg}=n`);
+          }
+        });
+        return lines.join("\\n");
+      }
+
+      // 默认 PRIVATE.txt 格式
+      const lines = [
+        "# ==========================================================",
+        "# Redmi AX6 (IPQ807x) 自定义固件扩展配置文件",
+        "# 生成时间: " + new Date().toLocaleString(),
+        "# 放置路径: 仓库中的 Config/PRIVATE.txt",
+        "# ==========================================================\n"
+      ];
+
+      // 选中的插件配置
+      lines.push("# ---------- 勾选启用的功能与插件 ----------");
+      pluginsData.forEach(p => {
+        if (selectedSet.has(p.id)) {
+          lines.push(`\n# [${p.category}] ${p.title} (${p.pkg})`);
+          p.configLines.forEach(cl => lines.push(cl));
+        }
+      });
+
+      // 未选中的显式禁用（特别是避免默认引入不需要的 VPN 或科学插件）
+      lines.push("\n\n# ---------- 显式排除或停用的插件 ----------");
+      pluginsData.forEach(p => {
+        if (!selectedSet.has(p.id)) {
+          lines.push(`CONFIG_PACKAGE_${p.pkg}=n`);
+        }
+      });
+
+      // 附加：确保非 ZeroTier 的 VPN 彻底剔除（如果用户没选）
+      if (!selectedSet.has("wireguard")) {
+        lines.push("CONFIG_PACKAGE_kmod-wireguard=n");
+        lines.push("CONFIG_PACKAGE_wireguard-tools=n");
+      }
+      if (!selectedSet.has("openvpn")) {
+        lines.push("CONFIG_PACKAGE_kmod-ovpn-backports=n");
+        lines.push("CONFIG_PACKAGE_openvpn-openssl=n");
+      }
+
+      return lines.join("\n");
+    }
+
+    // 弹窗操作
+    function openPreviewModal() {
+      document.getElementById("code-content").innerText = generateConfigText();
+      document.getElementById("modal-overlay").classList.add("open");
+    }
+
+    function closePreviewModal() {
+      document.getElementById("modal-overlay").classList.remove("open");
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.getElementById("tab-btn-private").className = `modal-tab-btn ${tab === 'private' ? 'active' : ''}`;
+      document.getElementById("tab-btn-package").className = `modal-tab-btn ${tab === 'package' ? 'active' : ''}`;
+      
+      const hint = document.getElementById("tab-hint");
+      if (tab === "private") {
+        hint.innerHTML = `直接覆盖到仓库中的 <code>Config/PRIVATE.txt</code>，编译时会自动注入生效。`;
+      } else {
+        hint.innerHTML = `在 GitHub 网页端点击 <code>Run workflow</code> 手动触发时，粘贴在 <code>PACKAGE</code> 输入框中。`;
+      }
+      document.getElementById("code-content").innerText = generateConfigText();
+    }
+
+    // 复制配置
+    function copyConfigText() {
+      const text = generateConfigText();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("已成功复制到剪贴板！");
+      }).catch(err => {
+        // Fallback
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        showToast("已成功复制到剪贴板！");
+      });
+    }
+
+    // 下载文件
+    function downloadConfigFile() {
+      const text = generateConfigText();
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "PRIVATE.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("已开始下载 PRIVATE.txt 文件！");
+    }
+
+    // Toast 提示
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2500);
+    }
+
+    // 监听搜索输入
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim();
+      renderCards();
+    });
+
+    // 页面初始化
+    initDefaults();
+    renderCategories();
+    renderCards();
+  </script>
+</body>
+</html>
