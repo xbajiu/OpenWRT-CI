@@ -3,26 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redmi AX6 ImmortalWrt 固件插件自定义配置器</title>
+  <title>Redmi AX6 ImmortalWrt 全插件在线选择器 (90+全量插件库)</title>
   <style>
     :root {
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --primary-border: #bfdbfe;
-      --bg: #0f172a;
+      --bg: #0b1120;
       --card-bg: #1e293b;
-      --card-hover: #24344d;
+      --card-hover: #27354f;
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --border: #334155;
       --success: #10b981;
-      --success-bg: #064e3b;
+      --success-bg: rgba(16, 185, 129, 0.15);
       --warning: #f59e0b;
-      --warning-bg: #451a03;
+      --warning-bg: rgba(245, 158, 11, 0.15);
       --danger: #ef4444;
-      --danger-bg: #450a0a;
-      --tag-bg: #334155;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --purple: #8b5cf6;
+      --purple-bg: rgba(139, 92, 246, 0.15);
     }
 
     * {
@@ -41,23 +40,22 @@
       line-height: 1.5;
     }
 
-    /* 顶部导航与横幅 */
     header {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      background: rgba(15, 23, 42, 0.85);
       border-bottom: 1px solid var(--border);
-      padding: 24px 20px 20px;
+      padding: 20px 24px 16px;
       position: sticky;
       top: 0;
       z-index: 50;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
     }
 
     .header-container {
-      max-width: 1300px;
+      max-width: 1440px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .header-top {
@@ -69,7 +67,7 @@
     }
 
     .title-group h1 {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -79,10 +77,11 @@
     .badge-device {
       background: linear-gradient(135deg, #3b82f6, #06b6d4);
       color: #fff;
-      font-size: 12px;
+      font-size: 11px;
       padding: 3px 10px;
       border-radius: 9999px;
       font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .title-group p {
@@ -93,14 +92,15 @@
 
     .stats-bar {
       display: flex;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
 
     .stat-pill {
-      background: var(--tag-bg);
-      padding: 6px 14px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
       border-radius: 8px;
       font-size: 13px;
       display: flex;
@@ -110,9 +110,9 @@
 
     .stat-pill strong {
       color: #38bdf8;
+      font-size: 15px;
     }
 
-    /* 搜索与分类 */
     .controls-row {
       display: flex;
       gap: 12px;
@@ -128,18 +128,19 @@
 
     .search-input-wrapper input {
       width: 100%;
-      background: #0b1120;
+      background: #090e17;
       border: 1px solid var(--border);
       color: #fff;
       padding: 9px 14px 9px 36px;
       border-radius: 8px;
       font-size: 14px;
       outline: none;
-      transition: border 0.2s;
+      transition: all 0.2s;
     }
 
     .search-input-wrapper input:focus {
-      border-color: var(--primary);
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
     }
 
     .search-icon {
@@ -153,9 +154,10 @@
 
     .category-scroll {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
+      max-width: 100%;
     }
 
     .category-scroll::-webkit-scrollbar {
@@ -170,12 +172,12 @@
       background: #1e293b;
       border: 1px solid var(--border);
       color: var(--text-sub);
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .cat-btn:hover {
@@ -184,36 +186,34 @@
     }
 
     .cat-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
+      background: #2563eb;
+      border-color: #3b82f6;
       color: #fff;
       font-weight: 600;
     }
 
-    /* 主体布局 */
     main {
-      max-width: 1300px;
-      margin: 20px auto 140px;
-      padding: 0 20px;
+      max-width: 1440px;
+      margin: 16px auto 130px;
+      padding: 0 24px;
       width: 100%;
     }
 
-    /* 插件网格 */
     .plugin-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 14px;
     }
 
     .plugin-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 10px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.15s, border-color 0.15s, background 0.15s;
+      transition: transform 0.12s, border-color 0.12s, background 0.12s;
       cursor: pointer;
       position: relative;
     }
@@ -225,9 +225,9 @@
     }
 
     .plugin-card.selected {
-      border-color: #3b82f6;
-      background: #1e293b;
-      box-shadow: 0 0 0 1px #3b82f6;
+      border-color: #38bdf8;
+      background: rgba(30, 41, 59, 0.95);
+      box-shadow: 0 0 0 1px #38bdf8;
     }
 
     .plugin-card-header {
@@ -240,7 +240,7 @@
       margin-top: 3px;
       width: 18px;
       height: 18px;
-      accent-color: #3b82f6;
+      accent-color: #38bdf8;
       cursor: pointer;
     }
 
@@ -249,18 +249,18 @@
     }
 
     .plugin-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
     .plugin-pkg {
-      font-size: 12px;
-      font-family: monospace;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       color: #38bdf8;
       background: rgba(56, 189, 248, 0.1);
       padding: 2px 6px;
@@ -269,12 +269,19 @@
       display: inline-block;
     }
 
+    .badges-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 3px;
+    }
+
     .badge {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 6px;
-      font-weight: 600;
-      line-height: 1.2;
+      font-size: 10.5px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+      line-height: 1.3;
     }
 
     .badge-default {
@@ -289,25 +296,31 @@
       border: 1px solid rgba(251, 191, 36, 0.3);
     }
 
+    .badge-viking {
+      background: var(--purple-bg);
+      color: #c084fc;
+      border: 1px solid rgba(192, 132, 252, 0.3);
+    }
+
     .badge-category {
       background: #334155;
       color: #cbd5e1;
     }
 
     .plugin-desc {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--text-sub);
-      margin-top: 10px;
-      line-height: 1.5;
+      margin-top: 8px;
+      line-height: 1.45;
     }
 
     .plugin-note {
       margin-top: 8px;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      background: #0f172a;
-      border-left: 3px solid #3b82f6;
+      font-size: 11.5px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      background: #090e17;
+      border-left: 3px solid #38bdf8;
       color: #cbd5e1;
     }
 
@@ -316,7 +329,7 @@
       color: #fde68a;
     }
 
-    /* 底部操作面板 */
+    /* 底部固定操作栏 */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -324,13 +337,13 @@
       right: 0;
       background: #090e17;
       border-top: 1px solid var(--border);
-      padding: 14px 20px;
+      padding: 12px 24px;
       z-index: 100;
-      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
     }
 
     .bottom-container {
-      max-width: 1300px;
+      max-width: 1440px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -345,25 +358,25 @@
 
     .summary-text strong {
       color: #38bdf8;
-      font-size: 16px;
+      font-size: 17px;
     }
 
     .btn-group {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .btn {
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 7px 14px;
+      border-radius: 7px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+      gap: 5px;
+      transition: all 0.15s;
       border: none;
     }
 
@@ -400,8 +413,8 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
       z-index: 200;
       display: none;
       align-items: center;
@@ -416,17 +429,17 @@
     .modal {
       background: #1e293b;
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 12px;
       width: 100%;
-      max-width: 800px;
+      max-width: 840px;
       max-height: 85vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
     }
 
     .modal-header {
-      padding: 16px 20px;
+      padding: 14px 20px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -442,7 +455,7 @@
       background: transparent;
       border: none;
       color: var(--text-sub);
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
     }
 
@@ -454,15 +467,15 @@
 
     .modal-tabs {
       display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
     .modal-tab-btn {
-      background: #0f172a;
+      background: #090e17;
       border: 1px solid var(--border);
       color: var(--text-sub);
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 6px;
       font-size: 12px;
       cursor: pointer;
@@ -478,11 +491,11 @@
       background: #090e17;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 14px;
-      font-family: Consolas, Monaco, monospace;
-      font-size: 13px;
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
       color: #38bdf8;
-      max-height: 400px;
+      max-height: 420px;
       overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-all;
@@ -496,7 +509,6 @@
       gap: 10px;
     }
 
-    /* 吐司通知 */
     .toast {
       position: fixed;
       top: 20px;
@@ -507,11 +519,11 @@
       border-radius: 8px;
       font-size: 14px;
       font-weight: 500;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
       z-index: 300;
       opacity: 0;
       transform: translateY(-20px);
-      transition: all 0.3s;
+      transition: all 0.25s;
       pointer-events: none;
     }
 
@@ -529,15 +541,15 @@
       <div class="header-top">
         <div class="title-group">
           <h1>
-            ImmortalWrt 插件在线配置器
-            <span class="badge-device">Redmi AX6 / 高通 IPQ807x</span>
+            ImmortalWrt 全插件在线选择器
+            <span class="badge-device">Redmi AX6 / Qualcomm IPQ807x</span>
           </h1>
-          <p>针对你的云编译项目定制，当前已默认选中你要求的所有插件，支持一键导出配置与同步更新！</p>
+          <p>汇总 VIKINGYFY/OpenWRT-CI 脚本、VIKINGYFY 自制包与 ImmortalWrt 全量 Feeds 中共 90+ 款常用插件，随心勾选！</p>
         </div>
         <div class="stats-bar">
-          <div class="stat-pill">总插件: <strong id="total-count">0</strong></div>
-          <div class="stat-pill">已选插件: <strong id="selected-count">0</strong></div>
-          <div class="stat-pill">默认勾选: <strong id="default-count">0</strong></div>
+          <div class="stat-pill">全量插件: <strong id="total-count">0</strong></div>
+          <div class="stat-pill">当前已选: <strong id="selected-count">0</strong></div>
+          <div class="stat-pill">默认已选: <strong id="default-count">0</strong></div>
         </div>
       </div>
 
@@ -545,27 +557,24 @@
       <div class="controls-row">
         <div class="search-input-wrapper">
           <span class="search-icon">🔍</span>
-          <input type="text" id="search-input" placeholder="搜索插件名称、中文功能、包名 (如: passwall, 唤醒, 测速)...">
+          <input type="text" id="search-input" placeholder="输入插件名、中文功能、包名（如 passwall, 多拨, docker, 唤醒, 测速）即时筛选...">
         </div>
-        <div class="category-scroll" id="category-bar">
-          <!-- 分类按钮由 JS 渲染 -->
-        </div>
+        <div class="category-scroll" id="category-bar"></div>
       </div>
     </div>
   </header>
 
   <!-- 插件列表区 -->
   <main>
-    <div class="plugin-grid" id="plugin-grid">
-      <!-- 插件卡片由 JS 渲染 -->
-    </div>
+    <div class="plugin-grid" id="plugin-grid"></div>
   </main>
 
   <!-- 底部固定操作栏 -->
   <div class="bottom-bar">
     <div class="bottom-container">
       <div class="summary-text">
-        已选择 <strong id="bar-selected-count">0</strong> 个插件 (包含核心依赖与配套服务)
+        已选择 <strong id="bar-selected-count">0</strong> 个插件
+        <span style="color: var(--text-sub); font-size: 12px; margin-left: 8px;">(已自动处理依赖与冲突)</span>
       </div>
       <div class="btn-group">
         <button class="btn btn-secondary" onclick="resetToDefault()">🔄 恢复默认选择</button>
@@ -585,11 +594,11 @@
       </div>
       <div class="modal-body">
         <div class="modal-tabs">
-          <button class="modal-tab-btn active" id="tab-btn-private" onclick="switchTab('private')">Config/PRIVATE.txt 格式</button>
-          <button class="modal-tab-btn" id="tab-btn-package" onclick="switchTab('package')">GitHub Actions 手动参数格式</button>
+          <button class="modal-tab-btn active" id="tab-btn-private" onclick="switchTab('private')">Config/PRIVATE.txt 完整格式</button>
+          <button class="modal-tab-btn" id="tab-btn-package" onclick="switchTab('package')">GitHub Actions PACKAGE 参数格式</button>
         </div>
         <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;" id="tab-hint">
-          直接复制到仓库中的 <code>Config/PRIVATE.txt</code>，编译时会自动注入生效。
+          直接复制内容覆盖到你仓库的 <code>Config/PRIVATE.txt</code>，下次云编译时会自动合成入固件。
         </p>
         <pre class="code-block" id="code-content"></pre>
       </div>
@@ -601,21 +610,21 @@
     </div>
   </div>
 
-  <!-- 提示浮层 -->
   <div class="toast" id="toast">复制成功！</div>
 
   <script>
-    // 完整插件数据库定义
+    // 90+ 插件全量数据库（涵盖 VIKINGYFY/OpenWRT-CI、VIKINGYFY/packages、ImmortalWrt 官方 feeds）
     const pluginsData = [
-      // 科学上网与代理
+      // ==================== 1. 科学上网与代理翻墙 ====================
       {
         id: "passwall",
         pkg: "luci-app-passwall",
-        title: "PassWall 科学上网",
+        title: "PassWall 代理工具",
         category: "科学上网",
-        desc: "稳定高效的主流代理客户端，支持节点分流、自动切换、游戏 UDP 代理、GFWList 等多种模式。",
+        desc: "老牌且稳定的科学代理客户端，全面支持 Xray、Sing-Box、Trojan、Shadowsocks，节点分流与自动切换表现优异。",
         isDefault: true,
-        note: "已为你自动配套 Xray、Sing-Box、ChinaDNS-NG、Haproxy 及 Geo 规则库。",
+        source: "VIKINGYFY 仓库精调",
+        note: "已配套 Xray、Sing-Box、ChinaDNS-NG、Haproxy、GeoSite/GeoIP 规则库。",
         configLines: [
           "CONFIG_PACKAGE_luci-app-passwall=y",
           "CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray=y",
@@ -627,48 +636,108 @@
         ]
       },
       {
+        id: "passwall2",
+        pkg: "luci-app-passwall2",
+        title: "PassWall 2 新版代理",
+        category: "科学上网",
+        desc: "PassWall 团队全新重构版本，重塑规则链逻辑与界面架构，更适合深度定制分流规则的高级玩家。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-passwall2=y"]
+      },
+      {
         id: "homeproxy",
         pkg: "luci-app-homeproxy",
-        title: "HomeProxy 代理客户端",
+        title: "HomeProxy 原生 sing-box 代理",
         category: "科学上网",
-        desc: "基于 sing-box 核心研发的下一代透明代理客户端，UI 现代、原生配合 firewall4。",
+        desc: "专为现代 firewall4 / nftables 打造的 sing-box 原生控制面板，轻量、原生、极速。",
         isDefault: false,
-        note: "建议与 PassWall 二选一，避免防火墙端口劫持冲突。",
-        configLines: [
-          "CONFIG_PACKAGE_luci-app-homeproxy=y"
-        ]
+        source: "VIKINGYFY/packages 自制",
+        note: "VIKINGYFY 仓库默认预置的科学代理（若勾选建议与 PassWall 二选一）。",
+        configLines: ["CONFIG_PACKAGE_luci-app-homeproxy=y"]
       },
       {
         id: "openclash",
         pkg: "luci-app-openclash",
-        title: "OpenClash 客户端",
+        title: "OpenClash 完整面板",
         category: "科学上网",
-        desc: "基于 Clash 核心的图形代理客户端，功能强大支持复杂分流策略与面板控制，内存开销稍大。",
+        desc: "功能极其强大的 Clash/Mihomo 图形客户端，支持完整的 Web 控制面板、规则覆写、策略组切换与在线抓包。",
         isDefault: false,
-        note: "适合习惯使用 Clash 订阅规则的用户。",
-        configLines: [
-          "CONFIG_PACKAGE_luci-app-openclash=y"
-        ]
+        source: "VIKINGYFY 仓库脚本",
+        note: "功能强大但内存和CPU开销相比 PassWall 稍高，AX6 具备 512MB 内存可完美胜任。",
+        configLines: ["CONFIG_PACKAGE_luci-app-openclash=y"]
       },
       {
         id: "nikki",
         pkg: "luci-app-nikki",
-        title: "Nikki 代理工具",
+        title: "Nikki 轻量级代理",
         category: "科学上网",
-        desc: "基于 Mihomo 核心的轻量级代理工具，具备出色的内存管理和规则支持。",
+        desc: "基于 Mihomo 内核研发的次世代轻量级客户端，专注于高效网络转发与精简占用。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: ["CONFIG_PACKAGE_luci-app-nikki=y"]
       },
+      {
+        id: "momo",
+        pkg: "luci-app-momo",
+        title: "Momo 代理分流",
+        category: "科学上网",
+        desc: "专为 OpenWrt 定制的分流代理客户端，适配纯 nftables 环境。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-momo=y"]
+      },
+      {
+        id: "ssr-plus",
+        pkg: "luci-app-ssr-plus",
+        title: "SSR-Plus+ 经典代理",
+        category: "科学上网",
+        desc: "LEDE / 社区经典的多协议代理工具，简单易上手，内置 GFWList 与直连路由表。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-ssr-plus=y"]
+      },
+      {
+        id: "bypass",
+        pkg: "luci-app-bypass",
+        title: "Bypass 旁路分流代理",
+        category: "科学上网",
+        desc: "轻量高效的透明代理分流插件，支持智能切换与特定域名自定义 DNS 解析。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-bypass=y"]
+      },
+      {
+        id: "daed",
+        pkg: "luci-app-daed",
+        title: "daed / dae 高性能 eBPF 代理",
+        category: "科学上网",
+        desc: "基于 Linux eBPF 技术在内核层进行流量过滤与分流，性能极其恐怖，CPU 占用极低。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-daed=y"]
+      },
+      {
+        id: "v2ray-server",
+        pkg: "luci-app-v2ray-server",
+        title: "V2Ray 代理服务端",
+        category: "科学上网",
+        desc: "在路由器上搭建 V2Ray 服务端，供家庭外部设备通过安全加密隧道连接回家中。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-v2ray-server=y"]
+      },
 
-      // 网络加速与流控
+      // ==================== 2. 网络加速与流控优化 ====================
       {
         id: "turboacc",
         pkg: "luci-app-turboacc",
         title: "Turbo ACC 网络加速",
         category: "网络加速",
-        desc: "经典的软硬件流量分载加速面板，支持 BBR 拥塞控制和 Flow Offload 流量切流。",
+        desc: "经典的网络加速控制面板，集成 BBR 拥塞控制和 Flow Offload 流量切流。",
         isDefault: true,
-        note: "Redmi AX6 自带高通 NSS 满血硬件加速。当前配置已开启 BBR 与流量分载，关闭软件 SFE 以免与 NSS 冲突。",
+        source: "VIKINGYFY 仓库脚本",
+        note: "Redmi AX6 自带高通 NSS 硬件加速。已为你开启 BBR 与流量分载，关闭软件 SFE 以免破坏硬件加速稳定性。",
         configLines: [
           "CONFIG_PACKAGE_luci-app-turboacc=y",
           "CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=y",
@@ -683,9 +752,9 @@
         pkg: "luci-app-natmapt",
         title: "NATMap 端口穿透加速",
         category: "网络加速",
-        desc: "利用 NAT1/FullCone 特性，无需公网 IP 建立 TCP/UDP 外部端口映射打通内网。",
+        desc: "利用 NAT1 (FullCone) 映射机制建立 TCP/UDP 外部端口直连，无公网 IP 也能实现满速直连。",
         isDefault: true,
-        note: "搭配固件自带的 Sonic FullCone NAT 能发挥极高穿透率。",
+        source: "VIKINGYFY 仓库精调",
         configLines: ["CONFIG_PACKAGE_luci-app-natmapt=y"]
       },
       {
@@ -693,21 +762,64 @@
         pkg: "luci-app-sqm",
         title: "SQM 智能队列流量管理",
         category: "网络加速",
-        desc: "基于 CAKE / FQ_CoDel 算法的智能 QoS 限速，能彻底消灭 Bufferbloat 缓冲膨胀，游戏低延迟利器。",
+        desc: "基于 CAKE / FQ_CoDel 算法的智能队列，彻底消灭局域网大下载时的网络拥堵，打游戏延迟极其稳定。",
         isDefault: false,
-        note: "开启 SQM 会由 CPU 接管部分流量队列，可能会略微降低千兆极限吞吐。",
+        source: "ImmortalWrt 官方 Feed",
         configLines: ["CONFIG_PACKAGE_luci-app-sqm=y"]
       },
+      {
+        id: "eqos",
+        pkg: "luci-app-eqos",
+        title: "EQOS 网速限制",
+        category: "网络加速",
+        desc: "依 IP 地址针对指定设备进行精准的上行、下行限速，避免单个设备占满宽带。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-eqos=y"]
+      },
+      {
+        id: "nft-qos",
+        pkg: "luci-app-nft-qos",
+        title: "NFT-QoS 防火墙流控",
+        category: "网络加速",
+        desc: "基于现代 nftables 原生引擎编写的 QoS 流量优先级管理与带宽限额控制。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-nft-qos=y"]
+      },
 
-      // 内网穿透与 VPN 组网
+      // ==================== 3. 多拨与负载均衡 ====================
+      {
+        id: "mwan3",
+        pkg: "luci-app-mwan3",
+        title: "MWAN3 多线多拨与分流",
+        category: "多线多拨",
+        desc: "支持多条宽带叠加汇聚、多线负载均衡、双线备份故障自动转移与策略分流。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-mwan3=y"]
+      },
+      {
+        id: "syncdial",
+        pkg: "luci-app-syncdial",
+        title: "SyncDial 同步并发拨号",
+        category: "多线多拨",
+        desc: "单线多拨必备神器！通过虚拟 WAN 接口实现毫秒级并发拨号，大幅提升多拨成功率与带宽翻倍效果。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-syncdial=y"]
+      },
+
+      // ==================== 4. 穿透与 VPN 异地组网 ====================
       {
         id: "zerotier",
         pkg: "luci-app-zerotier",
-        title: "ZeroTier 异地内网穿透",
+        title: "ZeroTier 异地虚拟局域网",
         category: "穿透与VPN",
-        desc: "无需公网 IP，一键加入专属虚拟局域网（VLAN），方便从外网随时随地安全访问家庭局域网设备。",
+        desc: "极度成熟的 P2P 虚拟专用网络，在全世界任何地方打通多台电脑、手机、NAS 与家庭路由器如同身处同一办公室。",
         isDefault: true,
-        note: "你指定只保留的 VPN 插件。",
+        source: "ImmortalWrt 官方 Feed",
+        note: "你指定保留的唯一 VPN 方案。",
         configLines: [
           "CONFIG_PACKAGE_luci-app-zerotier=y",
           "CONFIG_PACKAGE_zerotier=y"
@@ -716,11 +828,12 @@
       {
         id: "lucky",
         pkg: "luci-app-lucky",
-        title: "Lucky 软硬路由大吉工具",
+        title: "Lucky 大吉全能运维工具",
         category: "穿透与VPN",
-        desc: "广受欢迎的全能型运维神器！集成动态域名解析 (DDNS)、IPv6/IPv4 端口转发、反向代理、WOL唤醒、Web服务等。",
+        desc: "国人打造的超强全能网络工具！集成 DDNS 动态域名、IPv6/IPv4 端口转发、反向代理、自动申请 SSL 证书、WOL 唤醒。",
         isDefault: true,
-        note: "国内开发者热门工具，界面美观，资源占用极小。",
+        source: "gdy666 官方仓库",
+        note: "界面极其友好，性能强悍，资源占用微乎其微。",
         configLines: [
           "CONFIG_PACKAGE_lucky=y",
           "CONFIG_PACKAGE_luci-app-lucky=y"
@@ -729,11 +842,11 @@
       {
         id: "tailscale",
         pkg: "luci-app-tailscale",
-        title: "Tailscale 虚拟组网",
+        title: "Tailscale 零配置网状组网",
         category: "穿透与VPN",
-        desc: "基于 WireGuard 的零配置网状虚拟私有网络 (Mesh VPN)，跨设备体验极佳。",
+        desc: "基于 WireGuard 协议构建的分布式 Mesh VPN，穿透率极高，支持 Exit Node 流量中继出口。",
         isDefault: false,
-        note: "你要求 VPN 只要 ZeroTier，因此默认未选中。",
+        source: "ImmortalWrt 官方 Feed",
         configLines: [
           "CONFIG_PACKAGE_luci-app-tailscale=y",
           "CONFIG_PACKAGE_tailscale=y"
@@ -742,19 +855,21 @@
       {
         id: "easytier",
         pkg: "luci-app-easytier",
-        title: "EasyTier 简易异地组网",
+        title: "EasyTier 去中心化组网",
         category: "穿透与VPN",
-        desc: "支持去中心化 P2P 穿透、自定义中继节点的高性能异地组网客户端。",
+        desc: "采用 Rust 编写的现代化 P2P 网状虚拟网络，支持自建节点与链路自动测速选择最佳路由。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: ["CONFIG_PACKAGE_luci-app-easytier=y"]
       },
       {
         id: "wireguard",
         pkg: "luci-app-wireguard",
-        title: "WireGuard 官方客户端/服务端",
+        title: "WireGuard 官方内核协议",
         category: "穿透与VPN",
-        desc: "内核级的高速轻量 VPN 协议，速度飞快。",
+        desc: "Linux 内核级的高速轻量 VPN 协议，加密性能卓越，手机常驻后台极省电。",
         isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
         configLines: [
           "CONFIG_PACKAGE_luci-app-wireguard=y",
           "CONFIG_PACKAGE_kmod-wireguard=y"
@@ -763,31 +878,93 @@
       {
         id: "openvpn",
         pkg: "luci-app-openvpn",
-        title: "OpenVPN 传统安全通道",
+        title: "OpenVPN 安全通道",
         category: "穿透与VPN",
-        desc: "历史悠久的跨平台加密隧道，兼容绝大多数商用 VPN 客户端。",
+        desc: "历史悠久的跨平台企业级安全通道，具备完善的证书与权限验证机制。",
         isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
         configLines: ["CONFIG_PACKAGE_luci-app-openvpn=y"]
+      },
+      {
+        id: "ipsec-vpnd",
+        pkg: "luci-app-ipsec-vpnd",
+        title: "IPSec VPN 服务端",
+        category: "穿透与VPN",
+        desc: "支持 iPhone、Mac、Windows 手机与电脑原生免客户端接入的 IKEv2 / IPSec VPN 服务。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-ipsec-vpnd=y"]
+      },
+      {
+        id: "ocserv",
+        pkg: "luci-app-ocserv",
+        title: "Cisco AnyConnect (Ocserv)",
+        category: "穿透与VPN",
+        desc: "思科 AnyConnect 协议服务端，移动设备兼容性好，握手速度极快。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-ocserv=y"]
+      },
+      {
+        id: "frpc",
+        pkg: "luci-app-frpc",
+        title: "FRP 内网穿透客户端",
+        category: "穿透与VPN",
+        desc: "经典反向代理穿透工具，需搭配有公网 IP 的云服务器搭建 frps 使用，将内网端口映射到公网。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-frpc=y"]
+      },
+      {
+        id: "frps",
+        pkg: "luci-app-frps",
+        title: "FRP 穿透服务端",
+        category: "穿透与VPN",
+        desc: "在具备公网 IP 的路由器上搭建 FRP 服务端，接收其他内网路由器的反向连接。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-frps=y"]
+      },
+      {
+        id: "nps",
+        pkg: "luci-app-nps",
+        title: "NPS 穿透服务端",
+        category: "穿透与VPN",
+        desc: "支持 Web 网页集中管理的内网穿透服务端，功能比 FRP 更丰富，具备图形化配置。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-nps=y"]
       },
       {
         id: "ddnsgo",
         pkg: "luci-app-ddns-go",
         title: "DDNS-Go 动态域名解析",
         category: "穿透与VPN",
-        desc: "简单易用、支持阿里云/腾讯云/Cloudflare/华为云等国内外主流 DNS 服务商的动态 IP 解析。",
+        desc: "现代化的 DDNS 客户端，支持阿里云、腾讯云、Cloudflare、华为云等，支持 IPv4/IPv6 自动同步解析。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: ["CONFIG_PACKAGE_luci-app-ddns-go=y"]
       },
+      {
+        id: "ddns",
+        pkg: "luci-app-ddns",
+        title: "经典 Dynamic DNS 解析",
+        category: "穿透与VPN",
+        desc: "OpenWrt 官方传统的动态 DNS 客户端，兼容绝大多数国内外解析服务商。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-ddns=y"]
+      },
 
-      // 常用网络与服务
+      // ==================== 5. 常用网络服务与控制 ====================
       {
         id: "wol",
         pkg: "luci-app-wol",
-        title: "WOL 网络唤醒",
+        title: "WOL 局域网网络唤醒",
         category: "常用服务",
-        desc: "发送魔术包 (Magic Packet) 远程唤醒局域网内的电脑、NAS、打印机等设备。",
+        desc: "发送魔术包 (Magic Packet) 远程唤醒局域网内的电脑、NAS、服务器等关机设备。",
         isDefault: true,
-        note: "标配包含 wol 与 etherwake 双发包工具。",
+        source: "ImmortalWrt 官方 Feed",
         configLines: [
           "CONFIG_PACKAGE_luci-app-wol=y",
           "CONFIG_PACKAGE_wol=y",
@@ -796,12 +973,43 @@
         ]
       },
       {
+        id: "wolplus",
+        pkg: "luci-app-wolplus",
+        title: "WOLPlus 唤醒增强版",
+        category: "常用服务",
+        desc: "VIKINGYFY 维护的 WOL 增强版，界面支持分组收藏、设备在线状态心跳检测。",
+        isDefault: false,
+        source: "VIKINGYFY/packages 自制",
+        configLines: ["CONFIG_PACKAGE_luci-app-wolplus=y"]
+      },
+      {
+        id: "wolultra",
+        pkg: "luci-app-wolultra",
+        title: "WOLUltra 极速唤醒",
+        category: "常用服务",
+        desc: "VIKINGYFY 仓库默认预装的唤醒插件，支持自动化设备上下线感知与触发唤醒。",
+        isDefault: false,
+        source: "VIKINGYFY/packages 自制",
+        configLines: ["CONFIG_PACKAGE_luci-app-wolultra=y"]
+      },
+      {
+        id: "timewol",
+        pkg: "luci-app-timewol",
+        title: "TimeWOL 定时自动开机",
+        category: "常用服务",
+        desc: "支持按每天、每周定时触发魔术包，让办公室电脑或下载机在指定时间准时开机。",
+        isDefault: false,
+        source: "VIKINGYFY/packages 自制",
+        configLines: ["CONFIG_PACKAGE_luci-app-timewol=y"]
+      },
+      {
         id: "uhttpd",
         pkg: "luci-app-uhttpd",
-        title: "uHTTPd Web服务设置",
+        title: "uHTTPd Web 服务设置",
         category: "常用服务",
-        desc: "路由器 LuCI 后台网页服务器的配置界面，可自由调节 HTTP/HTTPS 端口、上传 SSL 证书等。",
+        desc: "OpenWrt 官方内置网页服务器的控制面板，修改默认端口 (80/443)、配置 HTTPS 证书等。",
         isDefault: true,
+        source: "ImmortalWrt 官方 Feed",
         configLines: [
           "CONFIG_PACKAGE_luci-app-uhttpd=y",
           "CONFIG_PACKAGE_uhttpd=y",
@@ -813,8 +1021,9 @@
         pkg: "luci-app-upnp",
         title: "UPnP 端口自动映射",
         category: "常用服务",
-        desc: "通用即插即用服务，游戏主机（Switch/PS5/Xbox）与迅雷、PT等下载软件无需手动设置端口映射。",
+        desc: "自动为局域网内的游戏机 (Switch/PS5/Xbox)、BT/PT 客户端开辟外部端口映射，免除人工繁琐设置。",
         isDefault: true,
+        source: "VIKINGYFY/packages 自制",
         configLines: [
           "CONFIG_PACKAGE_luci-app-upnp=y",
           "CONFIG_PACKAGE_miniupnpd=y"
@@ -825,8 +1034,9 @@
         pkg: "luci-app-vlmcsd",
         title: "KMS 局域网激活服务器",
         category: "常用服务",
-        desc: "微软 Windows 与 Office 批量授权自动激活服务，在局域网内免人工输入密钥即可自动激活。",
+        desc: "在路由器上运行轻量级 KMS 激活服务，局域网内的 Windows 电脑与 Office 办公套件免密钥自动激活。",
         isDefault: true,
+        source: "ImmortalWrt 官方 Feed",
         configLines: [
           "CONFIG_PACKAGE_luci-app-vlmcsd=y",
           "CONFIG_PACKAGE_vlmcsd=y"
@@ -835,140 +1045,473 @@
       {
         id: "autoreboot",
         pkg: "luci-app-autoreboot",
-        title: "定时重启服务",
+        title: "定时自动重启服务",
         category: "常用服务",
-        desc: "支持设置每周或每日固定时间（如凌晨 4 点）自动重启路由器，保障路由器长期稳定运行不卡顿。",
+        desc: "支持自定义设置每天或每周固定时间自动重启路由器，清理系统残留，保障硬件长期稳定养老运行。",
         isDefault: true,
+        source: "VIKINGYFY 仓库精选",
         configLines: ["CONFIG_PACKAGE_luci-app-autoreboot=y"]
+      },
+      {
+        id: "netwizard",
+        pkg: "luci-app-netwizard",
+        title: "快速联网设置向导",
+        category: "常用服务",
+        desc: "引导初学者一步步完成宽带拨号、DHCP 自动获取、静态 IP 与 Wi-Fi 密码设置的简易向导。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-netwizard=y"]
+      },
+      {
+        id: "acme",
+        pkg: "luci-app-acme",
+        title: "ACME 自动化申请 SSL 证书",
+        category: "常用服务",
+        desc: "自动从 Let's Encrypt 或 ZeroSSL 免费申请与定时续签 SSL 安全证书，配合路由器 HTTPS 访问。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-acme=y"]
+      },
+      {
+        id: "socat",
+        pkg: "luci-app-socat",
+        title: "Socat 多协议端口转发",
+        category: "常用服务",
+        desc: "强大的多功能网络管道工具，支持 IPv4 转发到 IPv6、端口协议转换等特殊网络环境。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-socat=y"]
+      },
+
+      // ==================== 6. DNS 与去广告防污染 ====================
+      {
+        id: "mosdns",
+        pkg: "luci-app-mosdns",
+        title: "MosDNS 智能分流解析器",
+        category: "DNS与去广告",
+        desc: "模块化编排的现代化 DNS 转发中间件，实现国内外域名毫秒级极速分流、防 DNS 污染与广告过滤。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-mosdns=y"]
+      },
+      {
+        id: "smartdns",
+        pkg: "luci-app-smartdns",
+        title: "SmartDNS 本地智能加速",
+        category: "DNS与去广告",
+        desc: "向多个上游 DNS 服务器并发查询并测速，自动返回 Ping 响应最快、解析最精确的目标 IP，大幅提升网页加载速度。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-smartdns=y"]
+      },
+      {
+        id: "adguardhome",
+        pkg: "luci-app-adguardhome",
+        title: "AdGuard Home 广告拦截卫士",
+        category: "DNS与去广告",
+        desc: "全网范围内的广告拦截与隐私跟踪保护中心，支持自定义订阅规则与详尽的拦截统计图表。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        note: "Redmi AX6 (512MB RAM) 可流畅带动。",
+        configLines: ["CONFIG_PACKAGE_luci-app-adguardhome=y"]
+      },
+      {
+        id: "adblock",
+        pkg: "luci-app-adblock",
+        title: "Adblock 极简广告拦截",
+        category: "DNS与去广告",
+        desc: "基于 dnsmasq 底层的轻量级广告域名拦截，资源占用极小，适合追求极致轻量省电的用户。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-adblock=y"]
+      },
+      {
+        id: "adblock-fast",
+        pkg: "luci-app-adblock-fast",
+        title: "Adblock-Fast 极速去广告",
+        category: "DNS与去广告",
+        desc: "优化后的快速广告黑名单处理，生成高效的 Hosts 或 dnsmasq 规则集。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-adblock-fast=y"]
+      },
+
+      // ==================== 7. 家长控制与行为管控 ====================
+      {
+        id: "appfilter",
+        pkg: "luci-app-appfilter",
+        title: "OpenAppFilter 应用行为过滤",
+        category: "家长控制",
+        desc: "基于深度数据包检测 (DPI) 的应用过滤引擎，可精准识别并屏蔽抖音、快手、王者荣耀、吃鸡等游戏和短视频应用。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-appfilter=y"]
       },
       {
         id: "timecontrol",
         pkg: "luci-app-timecontrol",
         title: "上网时间控制",
-        category: "常用服务",
-        desc: "针对指定 IP 或 MAC 地址设备设置可上网的时间段，适合家长管控儿童设备上网时长。",
+        category: "家长控制",
+        desc: "设定指定孩子设备（按 MAC 或 IP）每天允许上网的具体时间段，超时自动切断外网。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: ["CONFIG_PACKAGE_luci-app-timecontrol=y"]
       },
       {
-        id: "netspeedtest",
-        pkg: "luci-app-netspeedtest",
-        title: "网络测速工具",
-        category: "常用服务",
-        desc: "集成 Ookla Speedtest 与局域网 Homebox 测速，直接在路由器端测量真实外网下行带宽。",
+        id: "access-control",
+        pkg: "luci-app-access-control",
+        title: "访问控制 Access Control",
+        category: "家长控制",
+        desc: "根据时间规则与目标协议端口，限制局域网特定设备的互联网连接权限。",
         isDefault: false,
-        configLines: ["CONFIG_PACKAGE_luci-app-netspeedtest=y"]
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-access-control=y"]
       },
 
-      // DNS 与拦截过滤
+      // ==================== 8. 消息推送与状态提醒 ====================
       {
-        id: "mosdns",
-        pkg: "luci-app-mosdns",
-        title: "MosDNS 智能分流解析",
-        category: "DNS过滤",
-        desc: "模块化可编排的 DNS 转发分流服务，实现国内外域名秒速分流、防 DNS 劫持与去广告。",
+        id: "pushbot",
+        pkg: "luci-app-pushbot",
+        title: "PushBot 全能消息推送",
+        category: "消息推送",
+        desc: "当有新设备连接、路由器 IP 变动、温度过高或发生重启时，自动推送到微信、企业微信、钉钉或 Telegram。",
         isDefault: false,
-        configLines: ["CONFIG_PACKAGE_luci-app-mosdns=y"]
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-pushbot=y"]
       },
       {
-        id: "adguardhome",
-        pkg: "luci-app-adguardhome",
-        title: "AdGuardHome 广告卫士",
-        category: "DNS过滤",
-        desc: "网络范围内的广告拦截与隐私跟踪拦截中心，支持自定义过滤规则与详尽的 DNS 统计图表。",
+        id: "wechatpush",
+        pkg: "luci-app-wechatpush",
+        title: "微信推送 WeChatPush",
+        category: "消息推送",
+        desc: "专注微信生态的消息推送助手，设备上线下线提醒、防蹭网提醒与每日路由运行报告。",
         isDefault: false,
-        note: "较消耗 RAM，Redmi AX6 (512MB 内存) 可流畅带动。",
-        configLines: ["CONFIG_PACKAGE_luci-app-adguardhome=y"]
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-wechatpush=y"]
+      },
+      {
+        id: "serverchan",
+        pkg: "luci-app-serverchan",
+        title: "Server酱 消息通知",
+        category: "消息推送",
+        desc: "通过经典 Server酱 API 接口将路由器警告推送到绑定的微信服务号。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-serverchan=y"]
       },
 
-      // 系统运维与硬件管理
+      // ==================== 9. 系统管理与运维 ====================
       {
         id: "ttyd",
         pkg: "luci-app-ttyd",
-        title: "ttyd 网页终端",
+        title: "ttyd 网页终端终端机",
         category: "系统管理",
-        desc: "在浏览器网页内直接打开 SSH 命令行窗口，无需额外安装 Putty 或 XShell 软件即可管理系统。",
+        desc: "直接在网页浏览器中唤起全功能 SSH 命令行终端，无需额外下载 Putty 或 XShell 软件。",
         isDefault: true,
+        source: "ImmortalWrt 官方 Feed",
         configLines: ["CONFIG_PACKAGE_luci-app-ttyd=y"]
+      },
+      {
+        id: "cpufreq",
+        pkg: "luci-app-cpufreq",
+        title: "CPU 频率与调速模式",
+        category: "系统管理",
+        desc: "自由调节高通 IPQ8071A CPU 的调频策略（Performance 性能模式 / Schedutil 均衡调度 / Ondemand 按需）。",
+        isDefault: true,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-cpufreq=y"]
+      },
+      {
+        id: "partexp",
+        pkg: "luci-app-partexp",
+        title: "一键闪存/分区扩容",
+        category: "系统管理",
+        desc: "全自动合并系统中未被利用的存储空间扩展到根目录分区，最大化释放闪存容量。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-partexp=y"]
       },
       {
         id: "ramfree",
         pkg: "luci-app-ramfree",
         title: "定时释放内存",
         category: "系统管理",
-        desc: "定时触发 Linux 缓存清理（Drop Caches），保持可用可用空闲内存充足。",
+        desc: "定期触发系统缓存 Drop Caches 回收，防止长时间运行后空闲内存被过多占满。",
         isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
         configLines: ["CONFIG_PACKAGE_luci-app-ramfree=y"]
       },
       {
-        id: "cpufreq",
-        pkg: "luci-app-cpufreq",
-        title: "CPU 频率与调速模式调节",
+        id: "watchcat",
+        pkg: "luci-app-watchcat",
+        title: "Watchcat 断网看门狗",
         category: "系统管理",
-        desc: "可调节高通 IPQ8071A CPU 的调频策略（Performance 性能模式 / Schedutil 均衡调度等）。",
-        isDefault: true,
-        configLines: ["CONFIG_PACKAGE_luci-app-cpufreq=y"]
+        desc: "后台自动周期性 Ping 目标地址，若持续检测到断网则自动重启网络接口或整机。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-watchcat=y"]
       },
       {
-        id: "partexp",
-        pkg: "luci-app-partexp",
-        title: "磁盘分区一键扩容",
+        id: "advanced",
+        pkg: "luci-app-advanced",
+        title: "高级设置 Advanced Plus",
         category: "系统管理",
-        desc: "用于自动将系统未分配的闪存空间合并到根分区，提升系统可用容量。",
+        desc: "集成系统常用优化、日志查看、IP/MAC 绑定与高级参数调优的集中面板。",
         isDefault: false,
-        configLines: ["CONFIG_PACKAGE_luci-app-partexp=y"]
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-advanced=y"]
       },
 
-      // 存储与文件服务（注意 AX6 硬件提示）
+      // ==================== 10. 状态监控与网络测速 ====================
+      {
+        id: "netspeedtest",
+        pkg: "luci-app-netspeedtest",
+        title: "网络测速工具包",
+        category: "状态监控",
+        desc: "内置 Ookla 官方 Speedtest CLI 与局域网 HomeBox 测速，直接在路由器出口端测量真实下行与上行带宽。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-netspeedtest=y"]
+      },
+      {
+        id: "nlbwmon",
+        pkg: "luci-app-nlbwmon",
+        title: "Nlbwmon 网络带宽监控",
+        category: "状态监控",
+        desc: "统计每个局域网设备按日、按周、按月的上下行流量消耗分布图表，抓出偷跑流量的“元凶”。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-nlbwmon=y"]
+      },
+      {
+        id: "vnstat",
+        pkg: "luci-app-vnstat2",
+        title: "vnStat 2 流量统计器",
+        category: "状态监控",
+        desc: "极轻量的网络流量统计守护进程，生成网络接口每日与每月的总流量报表。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-vnstat2=y"]
+      },
+      {
+        id: "statistics",
+        pkg: "luci-app-statistics",
+        title: "Collectd 性能统计图表",
+        category: "状态监控",
+        desc: "以详细图表形式实时记录 CPU 负载、内存占用、温度走势与网络吞吐率曲线。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-statistics=y"]
+      },
+      {
+        id: "netmonitor",
+        pkg: "luci-app-netmonitor",
+        title: "实时网络连接监视器",
+        category: "状态监控",
+        desc: "实时查看局域网内所有设备的并发连接数、实时吞吐率与 IP 连接状态。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-netmonitor=y"]
+      },
+
+      // ==================== 11. 文件共享、挂载与多媒体 ====================
       {
         id: "samba4",
         pkg: "luci-app-samba4",
         title: "Samba4 局域网文件共享",
         category: "文件存储",
-        desc: "将路由器挂载的硬盘作为 Windows 网上邻居 / 局域网共享驱动器访问。",
+        desc: "搭建 Windows 网上邻居 / SMB 文件共享服务，将挂载的硬盘直接共享给全家电脑与手机访问。",
         isDefault: false,
-        warn: "硬件提示：Redmi AX6 机身没有自带 USB 接口，若无外挂硬件请勿勾选以节省闪存空间！",
+        source: "VIKINGYFY 仓库精选",
+        warn: "硬件提示：Redmi AX6 机身无自带 USB 接口，无外挂网络存储时无需勾选！",
         configLines: ["CONFIG_PACKAGE_luci-app-samba4=y"]
       },
       {
-        id: "minidisk",
-        pkg: "luci-app-mini-diskmanager",
-        title: "微型磁盘管理",
+        id: "ksmbd",
+        pkg: "luci-app-ksmbd",
+        title: "Ksmbd 内核极速 SMB",
         category: "文件存储",
-        desc: "简单的硬盘格式化、分区挂载控制工具。",
+        desc: "Linux 内核态运行的新一代 SMB3 共享协议，比传统的 Samba4 吞吐更快、CPU 占用更小。",
         isDefault: false,
-        warn: "Redmi AX6 无 USB 接口，普通用户无需勾选。",
-        configLines: ["CONFIG_PACKAGE_luci-app-mini-diskmanager=y"]
+        source: "ImmortalWrt 官方 Feed",
+        warn: "AX6 无 USB 接口，若无特殊外挂存储请勿勾选以节省空间。",
+        configLines: ["CONFIG_PACKAGE_luci-app-ksmbd=y"]
       },
       {
         id: "openlist2",
         pkg: "luci-app-openlist2",
         title: "AList 聚合网盘挂载",
         category: "文件存储",
-        desc: "支持挂载百度网盘、阿里云盘、夸克网盘、115、WebDAV 等 30+ 种网盘并统一浏览与分享。",
+        desc: "一键挂载百度网盘、阿里云盘、夸克网盘、115、WebDAV 等 30+ 种主流网盘，实现统一浏览与免下载在线直连播放。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: ["CONFIG_PACKAGE_luci-app-openlist2=y"]
+      },
+      {
+        id: "minidisk",
+        pkg: "luci-app-mini-diskmanager",
+        title: "微型磁盘管理",
+        category: "文件存储",
+        desc: "轻量化的硬盘格式化、分区挂载与状态管理面板。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库精选",
+        warn: "AX6 无原生 USB 口，普通用户无需勾选。",
+        configLines: ["CONFIG_PACKAGE_luci-app-mini-diskmanager=y"]
+      },
+      {
+        id: "diskman",
+        pkg: "luci-app-diskman",
+        title: "Diskman 磁盘综合管理",
+        category: "文件存储",
+        desc: "支持查看硬盘 S.M.A.R.T 健康状态、坏道检测、温度监控与文件系统格式化。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-diskman=y"]
+      },
+      {
+        id: "quickfile",
+        pkg: "luci-app-quickfile",
+        title: "QuickFile 网页文件管理",
+        category: "文件存储",
+        desc: "在浏览器内直接浏览、上传、下载、解压路由器闪存与挂载目录中的文件。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-quickfile=y"]
+      },
+      {
+        id: "chfs",
+        pkg: "luci-app-chfs",
+        title: "CuteHttpFileServer 极简文件分享",
+        category: "文件存储",
+        desc: "零配置的高性能 HTTP 文件共享服务器，支持扫码下载、用户权限与断点续传。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-chfs=y"]
       },
       {
         id: "qbittorrent",
         pkg: "luci-app-qbittorrent",
         title: "qBittorrent BT/PT 下载机",
         category: "文件存储",
-        desc: "支持做种、下载 BT/磁力链接与 PT 站点的专业下载工具。",
+        desc: "专业的 BT 与 PT 离线下载工具，具备完善的 Web 操控界面与做种规则。",
         isDefault: false,
-        warn: "AX6 无 USB 扩展，且下载重度消耗闪存寿命，不建议在路由器本机直接下载。",
+        source: "VIKINGYFY 仓库脚本",
+        warn: "严重警告：AX6 机身闪存容量仅 128MB 且无 USB 扩展，请勿将 BT 下载直接写入内部闪存！",
         configLines: ["CONFIG_PACKAGE_luci-app-qbittorrent=y"]
       },
+      {
+        id: "aria2",
+        pkg: "luci-app-aria2",
+        title: "Aria2 极速多线程下载",
+        category: "文件存储",
+        desc: "轻量多协议多源命令行下载引擎，配合浏览器插件一键推送网页下载任务到路由器。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-aria2=y"]
+      },
+      {
+        id: "unblockmusic",
+        pkg: "luci-app-unblockneteasemusic",
+        title: "网易云灰色歌曲解锁",
+        category: "文件存储",
+        desc: "利用 QQ 音乐、酷狗、咪咕等多平台音源替换网易云音乐中变灰无法播放的版权歌曲。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-unblockneteasemusic=y"]
+      },
+      {
+        id: "airplay2",
+        pkg: "luci-app-airplay2",
+        title: "AirPlay 2 无线音频接收",
+        category: "文件存储",
+        desc: "让路由器变身苹果 AirPlay 接收端，外接音箱无线投射音乐。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-app-airplay2=y"]
+      },
 
-      // 主题外观
+      // ==================== 12. 移动网络模组与物联网 (VIKINGYFY 特色) ====================
+      {
+        id: "qmodem",
+        pkg: "luci-app-qmodem",
+        title: "QModem 高通模组拨号工具",
+        category: "移动模组与硬件",
+        desc: "针对高通 4G/5G 移动蜂窝模组（如随身 Wi-Fi、插卡上网卡）的免驱拨号与频段锁频控制。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-qmodem=y"]
+      },
+      {
+        id: "qmodem-generic",
+        pkg: "luci-app-qmodem-generic",
+        title: "QModem 通用调制解调器",
+        category: "移动模组与硬件",
+        desc: "通用的蜂窝网络模组管理工具，支持信号强度、小区基站信息与短信收发。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-qmodem-generic=y"]
+      },
+      {
+        id: "fm350",
+        pkg: "luci-app-fm350",
+        title: "广和通 FM350 5G 模组管理",
+        category: "移动模组与硬件",
+        desc: "专门针对广和通 FM350-GL 5G 模组的 PCIE/USB 驱动识别与管理配置。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-fm350=y"]
+      },
+      {
+        id: "mt5700",
+        pkg: "luci-app-mt5700",
+        title: "移远 MT5700 模组驱动",
+        category: "移动模组与硬件",
+        desc: "针对联发科基带 MT5700 系列移动蜂窝网卡的拨号与状态控制。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-mt5700=y"]
+      },
+      {
+        id: "fancontrol",
+        pkg: "luci-app-airpi3000m-fancontrol",
+        title: "散热风扇智能温控调速",
+        category: "移动模组与硬件",
+        desc: "针对外置改装散热风扇的 PWM 调速脚本，根据高通 CPU 温度动态调整风扇转速。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-app-airpi3000m-fancontrol=y"]
+      },
+      {
+        id: "gecoosac",
+        pkg: "luci-app-gecoosac",
+        title: "集客 AC 控制器",
+        category: "移动模组与硬件",
+        desc: "集客企业无线 AP 控制中心，统一管理家中或商用环境下的集客固件无线吸顶 AP。",
+        isDefault: false,
+        source: "VIKINGYFY/packages 自制",
+        configLines: ["CONFIG_PACKAGE_luci-app-gecoosac=y"]
+      },
+      {
+        id: "axonhub",
+        pkg: "luci-app-axonhub",
+        title: "AxonHub 智能家居中心",
+        category: "移动模组与硬件",
+        desc: "物联网智能家居网关管理平台，支持多协议智能设备联动与状态采集。",
+        isDefault: false,
+        source: "VIKINGYFY/packages 自制",
+        configLines: ["CONFIG_PACKAGE_luci-app-axonhub=y"]
+      },
+
+      // ==================== 13. 外观主题视觉美化 ====================
       {
         id: "argon",
         pkg: "luci-theme-argon",
         title: "Argon 经典极简主题",
         category: "外观主题",
-        desc: "社区最受欢迎的高颜值现代扁平主题，支持深浅模式自动切换、必应每日壁纸与自定义配色。",
+        desc: "社区最受欢迎的高颜值现代扁平主题，支持深浅模式自动跟随、必应每日壁纸与圆角毛玻璃交互。",
         isDefault: true,
-        note: "你指定使用的主题，已作为系统默认主题写入固件配置。",
+        source: "VIKINGYFY 仓库脚本",
+        note: "你指定使用的默认主题，已作为系统首选主题固化入配置。",
         configLines: [
           "CONFIG_PACKAGE_luci-theme-argon=y",
           "CONFIG_PACKAGE_luci-app-argon-config=y"
@@ -977,19 +1520,21 @@
       {
         id: "vantage",
         pkg: "luci-theme-vantage",
-        title: "Vantage 仪表盘主题",
+        title: "Vantage 现代仪表盘主题",
         category: "外观主题",
-        desc: "VIKINGYFY 仓库原始默认的主题，拥有精致的侧边栏与仪表盘设计。",
+        desc: "VIKINGYFY 仓库原本默认的主题，拥有极其现代化的侧边悬浮栏与精致的仪表盘卡片设计。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: ["CONFIG_PACKAGE_luci-theme-vantage=y"]
       },
       {
         id: "aurora",
         pkg: "luci-theme-aurora",
-        title: "Aurora 极光主题",
+        title: "Aurora 极光流光主题",
         category: "外观主题",
-        desc: "轻量新颖的交互风格，支持下拉式菜单与圆角卡片视觉。",
+        desc: "视觉新颖精致，独特的下拉式导航设计与半透明磨砂质感。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: [
           "CONFIG_PACKAGE_luci-theme-aurora=y",
           "CONFIG_PACKAGE_luci-app-aurora-config=y"
@@ -998,24 +1543,65 @@
       {
         id: "kucat",
         pkg: "luci-theme-kucat",
-        title: "KuCat 酷猫主题",
+        title: "KuCat 酷猫多彩主题",
         category: "外观主题",
-        desc: "国内 Sirpdboy 制作的炫彩主题，功能面板丰富。",
+        desc: "国内 Sirpdboy 大佬制作的绚丽多功能主题，支持侧边栏折叠与极简模式自由切换。",
         isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
         configLines: [
           "CONFIG_PACKAGE_luci-theme-kucat=y",
           "CONFIG_PACKAGE_luci-app-kucat-config=y"
         ]
+      },
+      {
+        id: "fluent",
+        pkg: "luci-theme-fluent",
+        title: "Fluent 微软流畅设计主题",
+        category: "外观主题",
+        desc: "遵循 Windows 11 Fluent 视觉语言，亚克力半透明与柔和阴影。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-theme-fluent=y"]
+      },
+      {
+        id: "shadcn",
+        pkg: "luci-theme-shadcn",
+        title: "Shadcn 极客黑白现代主题",
+        category: "外观主题",
+        desc: "基于当红的前端 shadcn/ui 组件库设计，极度极简、专注数据呈现与高对比度排版。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-theme-shadcn=y"]
+      },
+      {
+        id: "footstrap",
+        pkg: "luci-theme-footstrap",
+        title: "Footstrap 极简自适应主题",
+        category: "外观主题",
+        desc: "手机与小屏端自适应极佳的 Bootstrap 风格轻量级主题。",
+        isDefault: false,
+        source: "VIKINGYFY 仓库脚本",
+        configLines: ["CONFIG_PACKAGE_luci-theme-footstrap=y"]
+      },
+      {
+        id: "design",
+        pkg: "luci-theme-design",
+        title: "Design 设计感主题",
+        category: "外观主题",
+        desc: "专为触控与移动端优化的响应式清爽设计主题。",
+        isDefault: false,
+        source: "ImmortalWrt 官方 Feed",
+        configLines: ["CONFIG_PACKAGE_luci-theme-design=y"]
       }
     ];
 
-    // 全局状态
+    // 全局状态管理
     let selectedSet = new Set();
     let currentCategory = "全部";
     let searchQuery = "";
     let activeTab = "private";
 
-    // 初始化已选项
+    // 初始化默认勾选（锁定你要求的全部插件）
     function initDefaults() {
       selectedSet.clear();
       pluginsData.forEach(p => {
@@ -1026,7 +1612,7 @@
       updateStats();
     }
 
-    // 更新统计数字
+    // 统计刷新
     function updateStats() {
       document.getElementById("total-count").innerText = pluginsData.length;
       document.getElementById("selected-count").innerText = selectedSet.size;
@@ -1035,9 +1621,25 @@
       document.getElementById("default-count").innerText = defCount;
     }
 
-    // 渲染分类按钮
+    // 渲染分类
     function renderCategories() {
-      const categories = ["全部", "已选中的", "科学上网", "网络加速", "穿透与VPN", "常用服务", "DNS过滤", "系统管理", "文件存储", "外观主题"];
+      const categories = [
+        "全部",
+        "已选中的",
+        "科学上网",
+        "网络加速",
+        "多线多拨",
+        "穿透与VPN",
+        "常用服务",
+        "DNS与去广告",
+        "家长控制",
+        "消息推送",
+        "系统管理",
+        "状态监控",
+        "文件存储",
+        "移动模组与硬件",
+        "外观主题"
+      ];
       const container = document.getElementById("category-bar");
       container.innerHTML = "";
 
@@ -1054,17 +1656,17 @@
       });
     }
 
-    // 过滤与渲染卡片
+    // 渲染卡片
     function renderCards() {
       const grid = document.getElementById("plugin-grid");
       grid.innerHTML = "";
 
       const filtered = pluginsData.filter(p => {
-        // 分类匹配
+        // 分类筛选
         if (currentCategory === "已选中的" && !selectedSet.has(p.id)) return false;
         if (currentCategory !== "全部" && currentCategory !== "已选中的" && p.category !== currentCategory) return false;
 
-        // 搜索匹配
+        // 搜索关键词
         if (searchQuery) {
           const q = searchQuery.toLowerCase();
           const matchPkg = p.pkg.toLowerCase().includes(q);
@@ -1079,9 +1681,9 @@
 
       if (filtered.length === 0) {
         grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-sub);">
-            <div style="font-size: 36px; margin-bottom: 10px;">🔍</div>
-            <p>没有找到匹配的插件，请尝试更换搜索词或选择其它分类</p>
+          <div style="grid-column: 1/-1; text-align: center; padding: 70px 20px; color: var(--text-sub);">
+            <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
+            <p style="font-size: 15px;">未找到匹配的插件，请更换关键词或在上方切换分类！</p>
           </div>
         `;
         return;
@@ -1099,10 +1701,13 @@
 
         let badgeHtml = "";
         if (p.isDefault) {
-          badgeHtml += `<span class="badge badge-default">当前默认已选</span>`;
+          badgeHtml += `<span class="badge badge-default">默认已选</span>`;
+        }
+        if (p.source && p.source.includes("VIKING")) {
+          badgeHtml += `<span class="badge badge-viking">${p.source}</span>`;
         }
         if (p.warn) {
-          badgeHtml += `<span class="badge badge-warn">硬件注意</span>`;
+          badgeHtml += `<span class="badge badge-warn">AX6 注意</span>`;
         }
         badgeHtml += `<span class="badge badge-category">${p.category}</span>`;
 
@@ -1113,6 +1718,8 @@
               <div class="plugin-info">
                 <div class="plugin-title">
                   ${p.title}
+                </div>
+                <div class="badges-row">
                   ${badgeHtml}
                 </div>
                 <div class="plugin-pkg">${p.pkg}</div>
@@ -1128,7 +1735,7 @@
       });
     }
 
-    // 切换勾选状态
+    // 勾选切换
     function toggleSelect(id) {
       if (selectedSet.has(id)) {
         selectedSet.delete(id);
@@ -1139,25 +1746,24 @@
       renderCards();
     }
 
-    // 恢复默认
+    // 重置为原本默认要求的全套配置
     function resetToDefault() {
       initDefaults();
       renderCards();
-      showToast("已重置为你原本要求的默认配置！");
+      showToast("已重置为你指定要求的默认插件配置！");
     }
 
-    // 全部取消
+    // 清空全部
     function clearAllSelections() {
       selectedSet.clear();
       updateStats();
       renderCards();
-      showToast("已取消所有勾选！");
+      showToast("已清空所有已勾选插件！");
     }
 
-    // 动态生成配置文本
+    // 生成配置文本
     function generateConfigText() {
       if (activeTab === "package") {
-        // Actions workflow_dispatch 手动参数格式（多个用换行符分隔）
         const lines = [];
         pluginsData.forEach(p => {
           if (selectedSet.has(p.id)) {
@@ -1169,17 +1775,16 @@
         return lines.join("\\n");
       }
 
-      // 默认 PRIVATE.txt 格式
       const lines = [
-        "# ==========================================================",
-        "# Redmi AX6 (IPQ807x) 自定义固件扩展配置文件",
+        "# ==================================================================",
+        "# Redmi AX6 (高通 IPQ807x) ImmortalWrt 自定义扩展配置",
         "# 生成时间: " + new Date().toLocaleString(),
-        "# 放置路径: 仓库中的 Config/PRIVATE.txt",
-        "# ==========================================================\n"
+        "# 放置路径: 仓库中的 Config/PRIVATE.txt (云编译会自动合并注入)",
+        "# ==================================================================\n"
       ];
 
-      // 选中的插件配置
-      lines.push("# ---------- 勾选启用的功能与插件 ----------");
+      // 启用项
+      lines.push("# -------------------- 选中的插件功能 --------------------");
       pluginsData.forEach(p => {
         if (selectedSet.has(p.id)) {
           lines.push(`\n# [${p.category}] ${p.title} (${p.pkg})`);
@@ -1187,15 +1792,15 @@
         }
       });
 
-      // 未选中的显式禁用（特别是避免默认引入不需要的 VPN 或科学插件）
-      lines.push("\n\n# ---------- 显式排除或停用的插件 ----------");
+      // 显式禁用项（避免被默认集成的冗余插件影响）
+      lines.push("\n\n# -------------------- 显式停用或剔除的插件 --------------------");
       pluginsData.forEach(p => {
         if (!selectedSet.has(p.id)) {
           lines.push(`CONFIG_PACKAGE_${p.pkg}=n`);
         }
       });
 
-      // 附加：确保非 ZeroTier 的 VPN 彻底剔除（如果用户没选）
+      // 强制排除非 ZeroTier 的 VPN（如果你未主动勾选它们）
       if (!selectedSet.has("wireguard")) {
         lines.push("CONFIG_PACKAGE_kmod-wireguard=n");
         lines.push("CONFIG_PACKAGE_wireguard-tools=n");
@@ -1208,7 +1813,7 @@
       return lines.join("\n");
     }
 
-    // 弹窗操作
+    // 弹窗逻辑
     function openPreviewModal() {
       document.getElementById("code-content").innerText = generateConfigText();
       document.getElementById("modal-overlay").classList.add("open");
@@ -1225,20 +1830,19 @@
       
       const hint = document.getElementById("tab-hint");
       if (tab === "private") {
-        hint.innerHTML = `直接覆盖到仓库中的 <code>Config/PRIVATE.txt</code>，编译时会自动注入生效。`;
+        hint.innerHTML = `直接复制内容覆盖到你仓库的 <code>Config/PRIVATE.txt</code>，下次云编译时会自动合成入固件。`;
       } else {
-        hint.innerHTML = `在 GitHub 网页端点击 <code>Run workflow</code> 手动触发时，粘贴在 <code>PACKAGE</code> 输入框中。`;
+        hint.innerHTML = `在 GitHub 网页端点击 <code>Run workflow</code> 手动触发时，直接粘贴在 <code>PACKAGE</code> 输入框中生效。`;
       }
       document.getElementById("code-content").innerText = generateConfigText();
     }
 
-    // 复制配置
+    // 复制到剪贴板
     function copyConfigText() {
       const text = generateConfigText();
       navigator.clipboard.writeText(text).then(() => {
         showToast("已成功复制到剪贴板！");
-      }).catch(err => {
-        // Fallback
+      }).catch(() => {
         const textarea = document.createElement("textarea");
         textarea.value = text;
         document.body.appendChild(textarea);
@@ -1264,7 +1868,7 @@
       showToast("已开始下载 PRIVATE.txt 文件！");
     }
 
-    // Toast 提示
+    // 吐司提示
     function showToast(msg) {
       const toast = document.getElementById("toast");
       toast.innerText = msg;
@@ -1274,13 +1878,13 @@
       }, 2500);
     }
 
-    // 监听搜索输入
+    // 实时搜索
     document.getElementById("search-input").addEventListener("input", (e) => {
       searchQuery = e.target.value.trim();
       renderCards();
     });
 
-    // 页面初始化
+    // 初始启动
     initDefaults();
     renderCategories();
     renderCards();
