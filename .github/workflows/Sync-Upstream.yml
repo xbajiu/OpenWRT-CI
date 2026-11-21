@@ -2,7 +2,7 @@
 name: Sync-Upstream
 
 on:
-  # 自动同步：每2天早上 05:00 (北京时间，在 05:21 编译前执行)
+  # 自动同步：每2天定时执行
   schedule:
     - cron: "21 5 */2 * *"
   # 手动一键同步
@@ -34,17 +34,23 @@ jobs:
       - name: Merge Upstream Changes
         run: |
           LOCAL_HEAD=$(git rev-parse HEAD)
+          echo "LOCAL_HEAD=$LOCAL_HEAD" >> "$GITHUB_ENV"
 
-          # 尝试平滑合并上游更新；如遇冲突则先以上游为准完成合并，随后强制恢复本地私有保护文件
-          if git merge upstream/main --no-edit -m "chore: 自动同步上游 VIKINGYFY/OpenWRT-CI 最新代码"; then
-            echo "Successfully merged upstream changes."
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "Already up to date with VIKINGYFY/OpenWRT-CI."
+            exit 0
+          fi
+
+          # 尝试平滑合并上游更新（暂不提交，先恢复私有文件与钩子）
+          if git merge --no-commit --no-ff upstream/main; then
+            echo "Merged upstream changes cleanly."
           else
             echo "Notice: Merge conflict detected, resolving with upstream base and restoring private overrides..."
             git merge --abort || true
-            git merge -X theirs upstream/main --no-edit -m "chore: 自动同步上游更新 (保护私有配置)" || true
+            git merge --no-commit --no-ff -X theirs upstream/main || true
           fi
 
-          # 1. 强制保护私有文件与自定义工作流配置不被上游覆盖
+          # 1. 强制保护私有文件与自定义工作流配置不被上游覆盖或删除
           PROTECTED_FILES=(
             "Scripts/PRIVATE.sh"
             "Config/PRIVATE.txt"
@@ -61,35 +67,29 @@ jobs:
 
           # 2. 确保 Scripts/Packages.sh 始终包含 PRIVATE.sh 加载钩子
           if ! grep -q 'Scripts/PRIVATE.sh' Scripts/Packages.sh; then
-            cat >> Scripts/Packages.sh << 'EOF'
-
-          #引入私有扩展脚本
-          if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
-          	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
-          fi
-          EOF
-            sed -i 's/^          //' Scripts/Packages.sh
+            printf '\n#引入私有扩展脚本\nif [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then\n\tsource "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"\nfi\n' >> Scripts/Packages.sh
           fi
 
           # 3. 确保 Scripts/Settings.sh 始终包含 PRIVATE.txt 加载钩子
           if ! grep -q 'Config/PRIVATE.txt' Scripts/Settings.sh; then
-            cat >> Scripts/Settings.sh << 'EOF'
-
-          #引入私有扩展配置
-          if [ -f "$GITHUB_WORKSPACE/Config/PRIVATE.txt" ]; then
-          	echo "Applying private configurations from PRIVATE.txt..."
-          	cat $GITHUB_WORKSPACE/Config/PRIVATE.txt >> ./.config
-          fi
-          EOF
-            sed -i 's/^          //' Scripts/Settings.sh
+            printf '\n#引入私有扩展配置\nif [ -f "$GITHUB_WORKSPACE/Config/PRIVATE.txt" ]; then\n\techo "Applying private configurations from PRIVATE.txt..."\n\tcat $GITHUB_WORKSPACE/Config/PRIVATE.txt >> ./.config\nfi\n' >> Scripts/Settings.sh
           fi
 
-          # 如有保护性修正则追加提交
-          if ! git diff --quiet || ! git diff --cached --quiet; then
-            git add -A
-            git commit -m "chore: 恢复并锁定私有配置与自定义编译钩子"
+          git add -A
+          if ! git diff --cached --quiet || [ -f .git/MERGE_HEAD ]; then
+            git commit -m "chore: 自动同步上游 VIKINGYFY/OpenWRT-CI 并锁定私有配置"
           fi
 
       - name: Push to Origin
         run: |
-          git push origin main
+          if git push origin main; then
+            echo "Pushed synced changes to origin/main."
+          else
+            echo "Notice: Push rejected (likely due to GITHUB_TOKEN workflow file restriction); keeping local .github/workflows and retrying..."
+            git checkout "$LOCAL_HEAD" -- .github/workflows
+            if ! git diff --cached --quiet || ! git diff --quiet; then
+              git add .github/workflows
+              git commit --amend --no-edit
+            fi
+            git push origin main
+          fi
