@@ -1782,6 +1782,36 @@
         "# ==================================================================\n"
       ];
 
+      // 目标机型过滤：锁定仅编译 Redmi AX6 与 AX6 Stock
+      lines.push("# ---------- 目标机型过滤：锁定仅编译 Redmi AX6 与 AX6 Stock ----------");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_aliyun_ap8220=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_arista_ap-c260=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_arista_ap-c360=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_dynalink_dl-wrx36=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_homewrk=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx4200v1=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx4200v2=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx4300=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx5300=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx8500=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_qnap_301w=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_verizon_cr1000a=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_xiaomi_ax3600=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_xiaomi_ax3600-stock=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_xiaomi_ax9000=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_xiaomi_ax9000-stock=n");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_redmi_ax6=y");
+      lines.push("CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_redmi_ax6-stock=y\n");
+
+      // 语言设置：仅编译简体中文，取消英文语言包
+      lines.push("# ---------- 语言设置：仅编译简体中文，取消英文语言包 ----------");
+      lines.push("CONFIG_PACKAGE_default-settings-chn=y");
+      lines.push("CONFIG_LUCI_LANG_zh_Hans=y");
+      lines.push("CONFIG_PACKAGE_luci-i18n-base-zh-cn=y");
+      lines.push("CONFIG_LUCI_LANG_en=n");
+      lines.push("# CONFIG_LUCI_LANG_en is not set");
+      lines.push("CONFIG_PACKAGE_luci-i18n-base-en=n\n");
+
       // 启用项
       lines.push("# -------------------- 选中的插件功能 --------------------");
       pluginsData.forEach(p => {

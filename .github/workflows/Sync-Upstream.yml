@@ -33,13 +33,61 @@ jobs:
 
       - name: Merge Upstream Changes
         run: |
-          # 尝试平滑合并上游更新
+          LOCAL_HEAD=$(git rev-parse HEAD)
+
+          # 尝试平滑合并上游更新；如遇冲突则先以上游为准完成合并，随后强制恢复本地私有保护文件
           if git merge upstream/main --no-edit -m "chore: 自动同步上游 VIKINGYFY/OpenWRT-CI 最新代码"; then
             echo "Successfully merged upstream changes."
           else
-            echo "Notice: Merge conflict detected, attempting strategy ours for specific conflict..."
+            echo "Notice: Merge conflict detected, resolving with upstream base and restoring private overrides..."
             git merge --abort || true
             git merge -X theirs upstream/main --no-edit -m "chore: 自动同步上游更新 (保护私有配置)" || true
+          fi
+
+          # 1. 强制保护私有文件与自定义工作流配置不被上游覆盖
+          PROTECTED_FILES=(
+            "Scripts/PRIVATE.sh"
+            "Config/PRIVATE.txt"
+            "plugin-selector.html"
+            ".github/workflows/Sync-Upstream.yml"
+            ".github/workflows/QCA-ALL.yml"
+            ".github/workflows/Auto-Clean.yml"
+            ".github/workflows/AIROHA-ALL.yml"
+            ".github/workflows/MTK-ALL.yml"
+            ".github/workflows/OWRT-ALL.yml"
+            ".github/workflows/QCB-ALL.yml"
+          )
+          git checkout "$LOCAL_HEAD" -- "${PROTECTED_FILES[@]}"
+
+          # 2. 确保 Scripts/Packages.sh 始终包含 PRIVATE.sh 加载钩子
+          if ! grep -q 'Scripts/PRIVATE.sh' Scripts/Packages.sh; then
+            cat >> Scripts/Packages.sh << 'EOF'
+
+          #引入私有扩展脚本
+          if [ -f "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh" ]; then
+          	source "$GITHUB_WORKSPACE/Scripts/PRIVATE.sh"
+          fi
+          EOF
+            sed -i 's/^          //' Scripts/Packages.sh
+          fi
+
+          # 3. 确保 Scripts/Settings.sh 始终包含 PRIVATE.txt 加载钩子
+          if ! grep -q 'Config/PRIVATE.txt' Scripts/Settings.sh; then
+            cat >> Scripts/Settings.sh << 'EOF'
+
+          #引入私有扩展配置
+          if [ -f "$GITHUB_WORKSPACE/Config/PRIVATE.txt" ]; then
+          	echo "Applying private configurations from PRIVATE.txt..."
+          	cat $GITHUB_WORKSPACE/Config/PRIVATE.txt >> ./.config
+          fi
+          EOF
+            sed -i 's/^          //' Scripts/Settings.sh
+          fi
+
+          # 如有保护性修正则追加提交
+          if ! git diff --quiet || ! git diff --cached --quiet; then
+            git add -A
+            git commit -m "chore: 恢复并锁定私有配置与自定义编译钩子"
           fi
 
       - name: Push to Origin
